@@ -1,0 +1,79 @@
+<!-- PDF Template for ReklamPro -->
+<!-- Bu dosya GitHub'dan çekilecek ve PDF oluşturmak için kullanılacak -->
+
+<div class="pdf-container">
+  <!-- Header -->
+  <div class="pdf-header">
+    <img src="https://cdn.jsdelivr.net/gh/msarikayapro/reklamproteklif/reklamprowhite.png" class="pdf-logo" alt="ReklamPro">
+    <h1 class="pdf-title">Sosyal Medya Yönetimi Teklifi</h1>
+    <p class="pdf-subtitle">Dijital Pazarlama Ajansı | Konya</p>
+  </div>
+
+  <!-- Customer Info -->
+  <div class="customer-info-box">
+    <h2 class="customer-info-title">Müşteri Bilgileri</h2>
+    <div class="customer-info-grid">
+      <div class="customer-info-item">
+        <span class="customer-info-label">Müşteri:</span>
+        <span class="customer-info-value" id="pdf-customer-name"></span>
+      </div>
+      <div class="customer-info-item" id="pdf-company-wrapper" style="display:none;">
+        <span class="customer-info-label">Firma:</span>
+        <span class="customer-info-value" id="pdf-customer-company"></span>
+      </div>
+      <div class="customer-info-item" id="pdf-email-wrapper" style="display:none;">
+        <span class="customer-info-label">E-posta:</span>
+        <span class="customer-info-value" id="pdf-customer-email"></span>
+      </div>
+      <div class="customer-info-item" id="pdf-phone-wrapper" style="display:none;">
+        <span class="customer-info-label">Telefon:</span>
+        <span class="customer-info-value" id="pdf-customer-phone"></span>
+      </div>
+    </div>
+    <div style="margin-top: 15px; font-size: 13px; color: #718096;">
+      <strong>Teklif Tarihi:</strong> <span id="pdf-date"></span>
+    </div>
+  </div>
+
+  <!-- Services Summary -->
+  <div class="services-summary">
+    <h2 class="summary-title">Hizmet Detayları</h2>
+    
+    <div class="platform-info">
+      <span class="platform-label">📱 Platformlar:</span>
+      <span id="pdf-platforms"></span>
+    </div>
+
+    <div id="pdf-services-list">
+      <!-- Services will be inserted here dynamically -->
+    </div>
+
+    <div class="total-section">
+      <span class="total-label">TOPLAM AYLIK ÜCRET:</span>
+      <span class="total-price" id="pdf-total"></span>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="notes-section">
+    <div class="note-item">* Fiyatlar KDV hariçtir.</div>
+    <div class="note-item">* Teklif 30 gün geçerlidir.</div>
+    <div class="note-item">* Ödeme koşulları sözleşme ile belirlenir.</div>
+    <div class="note-item">* Instagram ve Facebook temel paketimize dahildir.</div>
+  </div>
+
+  <!-- Descriptions Section -->
+  <div class="description-section" id="pdf-descriptions">
+    <div class="description-header">
+      HİZMET DETAYLARI VE AÇIKLAMALAR
+    </div>
+    <!-- Descriptions will be inserted here dynamically -->
+  </div>
+
+  <!-- Footer -->
+  <div class="pdf-footer">
+    <div class="footer-content">
+      ReklamPro | Dijital Pazarlama Ajansı | Konya
+    </div>
+  </div>
+</div>
