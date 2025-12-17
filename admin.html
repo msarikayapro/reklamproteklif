@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReklamPro Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .tier-info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .textarea-group {
+            margin-bottom: 20px;
+        }
+
+        .textarea-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .textarea-group textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+
+        .textarea-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .emoji-picker {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .emoji-btn {
+            padding: 8px 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .emoji-btn:hover {
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .preview-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px dashed #667eea;
+        }
+
+        .preview-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .preview-content {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-line;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #c3e6cb;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #0d47a1;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #e65100;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎨 ReklamPro Admin Panel</h1>
+            <p>Fiyatlandırma ve Açıklama Yönetimi</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            ✅ Değişiklikler kaydedildi! JSON dosyalarını GitHub'a yükleyin.
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('pricing')">💰 Fiyatlandırma</button>
+            <button class="tab-btn" onclick="switchTab('descriptions')">📝 Açıklamalar</button>
+        </div>
+
+        <!-- Pricing Tab -->
+        <div class="tab-content active" id="pricing-tab">
+            <div class="panel">
+                <div class="section-title">🎨 Post Tasarımı Fiyatları</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tier 1 (1-4 adet)</label>
+                        <input type="number" id="post-tier1" value="1600">
+                        <span class="tier-info">Birim fiyat</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Tier 2 (5-8 adet)</label>
+                        <input type="number" id="post-tier2" value="1250">
+                        <span class="tier-info">Birim fiyat</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Tier 3 (9-15 adet)</label>
+                        <input type="number" id="post-tier3" value="1000">
+                        <span class="tier-info">Birim fiyat</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Tier 4 (16+ adet)</label>
+                        <input type="number" id="post-tier4" value="900">
+                        <span class="tier-info">Birim fiyat</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">🎬 Reels Video Fiyatları</div>
+                <div class="info-box">
+                    <strong>Prodüksiyonsuz:</strong> Müşteri kendi video içeriğini sağlar
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Prodüksiyonsuz - Tier 1</label>
+                        <input type="number" id="reels-no-tier1" value="2500">
+                    </div>
+                    <div class="form-group">
+                        <label>Prodüksiyonsuz - Tier 2</label>
+                        <input type="number" id="reels-no-tier2" value="2200">
+                    </div>
+                    <div class="form-group">
+                        <label>Prodüksiyonsuz - Tier 3</label>
+                        <input type="number" id="reels-no-tier3" value="1900">
+                    </div>
+                    <div class="form-group">
+                        <label>Prodüksiyonsuz - Tier 4</label>
+                        <input type="number" id="reels-no-tier4" value="1600">
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <strong>Prodüksiyonlu:</strong> Çekim, kurgu ve düzenleme dahil
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Prodüksiyonlu - Tier 1</label>
+                        <input type="number" id="reels-prod-tier1" value="3500">
+                    </div>
+                    <div class="form-group">
+                        <label>Prodüksiyonlu - Tier 2</label>
+                        <input type="number" id="reels-prod-tier2" value="2500">
+                    </div>
+                    <div class="form-group">
+                        <label>Prodüksiyonlu - Tier 3</label>
+                        <input type="number" id="reels-prod-tier3" value="2000">
+                    </div>
+                    <div class="form-group">
+                        <label>Prodüksiyonlu - Tier 4</label>
+                        <input type="number" id="reels-prod-tier4" value="1900">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">🎡 Carousel & Story Fiyatları</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Carousel - Tier 1</label>
+                        <input type="number" id="carousel-tier1" value="1600">
+                    </div>
+                    <div class="form-group">
+                        <label>Carousel - Tier 2</label>
+                        <input type="number" id="carousel-tier2" value="1250">
+                    </div>
+                    <div class="form-group">
+                        <label>Carousel - Tier 3</label>
+                        <input type="number" id="carousel-tier3" value="1000">
+                    </div>
+                    <div class="form-group">
+                        <label>Carousel - Tier 4</label>
+                        <input type="number" id="carousel-tier4" value="900">
+                    </div>
+                    <div class="form-group">
+                        <label>Story - Tier 1</label>
+                        <input type="number" id="story-tier1" value="1600">
+                    </div>
+                    <div class="form-group">
+                        <label>Story - Tier 2</label>
+                        <input type="number" id="story-tier2" value="1250">
+                    </div>
+                    <div class="form-group">
+                        <label>Story - Tier 3</label>
+                        <input type="number" id="story-tier3" value="1000">
+                    </div>
+                    <div class="form-group">
+                        <label>Story - Tier 4</label>
+                        <input type="number" id="story-tier4" value="900">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">📊 Meta Reklam & Diğer Hizmetler</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Meta Reklam (0-40K)</label>
+                        <input type="number" id="meta-budget1" value="20000">
+                    </div>
+                    <div class="form-group">
+                        <label>Meta Reklam (40-120K)</label>
+                        <input type="number" id="meta-budget2" value="30000">
+                    </div>
+                    <div class="form-group">
+                        <label>Meta Reklam (120-250K)</label>
+                        <input type="number" id="meta-budget3" value="40000">
+                    </div>
+                    <div class="form-group">
+                        <label>Meta Reklam (250K+)</label>
+                        <input type="text" id="meta-budget4" value="20.000 TL + %10">
+                    </div>
+                    <div class="form-group">
+                        <label>Google Ads Yönetimi</label>
+                        <input type="number" id="google-ads" value="25000">
+                    </div>
+                    <div class="form-group">
+                        <label>Ek Platform Ücreti</label>
+                        <input type="number" id="platform-extra" value="3000">
+                        <span class="tier-info">YouTube, TikTok, X başına</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="savePricing()">💾 Fiyatları Kaydet</button>
+                <button class="btn btn-secondary" onclick="downloadPricingJSON()">📥 pricing.json İndir</button>
+            </div>
+        </div>
+
+        <!-- Descriptions Tab -->
+        <div class="tab-content" id="descriptions-tab">
+            <div class="panel">
+                <div class="section-title">📊 Meta Reklam Açıklamaları</div>
+                
+                <div class="info-box">
+                    💡 <strong>İpucu:</strong> Emoji butonlarını kullanarak metninizi zenginleştirebilirsiniz. Maddeli liste için her satırın başına "• " ekleyin.
+                </div>
+
+                <div class="textarea-group">
+                    <label>Meta Reklam Nedir?</label>
+                    <div class="emoji-picker">
+                        <button class="emoji-btn" onclick="insertEmoji('meta-what', '📱')">📱</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-what', '🎯')">🎯</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-what', '💼')">💼</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-what', '📊')">📊</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-what', '✨')">✨</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-what', '•')">•</button>
+                    </div>
+                    <textarea id="meta-what" placeholder="Meta Reklam Yönetimi'nin ne olduğunu açıklayın..."></textarea>
+                </div>
+
+                <div class="textarea-group">
+                    <label>Hizmet Kapsamı</label>
+                    <div class="emoji-picker">
+                        <button class="emoji-btn" onclick="insertEmoji('meta-scope', '✅')">✅</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-scope', '🎯')">🎯</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-scope', '📈')">📈</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-scope', '💡')">💡</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-scope', '•')">•</button>
+                    </div>
+                    <textarea id="meta-scope" placeholder="Meta Reklam hizmet kapsamını açıklayın..."></textarea>
+                </div>
+
+                <div class="textarea-group">
+                    <label>Sosyal Medya Yönetimi ile Farkı</label>
+                    <div class="emoji-picker">
+                        <button class="emoji-btn" onclick="insertEmoji('meta-diff', '🔄')">🔄</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-diff', '💰')">💰</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-diff', '🎯')">🎯</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-diff', '📊')">📊</button>
+                        <button class="emoji-btn" onclick="insertEmoji('meta-diff', '•')">•</button>
+                    </div>
+                    <textarea id="meta-diff" placeholder="Sosyal medya yönetimi ile farkını açıklayın..."></textarea>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">🎬 Prodüksiyon Açıklaması</div>
+                <div class="textarea-group">
+                    <label>Prodüksiyonlu Çekim Hizmeti</label>
+                    <div class="emoji-picker">
+                        <button class="emoji-btn" onclick="insertEmoji('production', '🎥')">🎥</button>
+                        <button class="emoji-btn" onclick="insertEmoji('production', '📸')">📸</button>
+                        <button class="emoji-btn" onclick="insertEmoji('production', '✂️')">✂️</button>
+                        <button class="emoji-btn" onclick="insertEmoji('production', '🎬')">🎬</button>
+                        <button class="emoji-btn" onclick="insertEmoji('production', '•')">•</button>
+                    </div>
+                    <textarea id="production" placeholder="Prodüksiyon hizmetini açıklayın..."></textarea>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">🎨 Post Tasarımı Açıklamaları</div>
+                <div class="textarea-group">
+                    <label>Post Tasarımı (Prodüksiyonsuz)</label>
+                    <div class="emoji-picker">
+                        <button class="emoji-btn" onclick="insertEmoji('post-no-prod', '🎨')">🎨</button>
+                        <button class="emoji-btn" onclick="insertEmoji('post-no-prod', '✨')">✨</button>
+                        <button class="emoji-btn" onclick="insertEmoji('post-no-prod', '📱')">📱</button>
+                        <button class="emoji-btn" onclick="insertEmoji('post-no-prod', '•')">•</button>
+                    </div>
+                    <textarea id="post-no-prod" placeholder="Prodüksiyonsuz post tasarımını açıklayın..."></textarea>
+                </div>
+
+                <div class="textarea-group">
+                    <label>Post Tasarımı (Prodüksiyonlu)</label>
+                    <div class="emoji-picker">
+                        <button class="emoji-btn" onclick="insertEmoji('post-prod', '🎨')">🎨</button>
+                        <button class="emoji-btn" onclick="insertEmoji('post-prod', '📸')">📸</button>
+                        <button class="emoji-btn" onclick="insertEmoji('post-prod', '✨')">✨</button>
+                        <button class="emoji-btn" onclick="insertEmoji('post-prod', '•')">•</button>
+                    </div>
+                    <textarea id="post-prod" placeholder="Prodüksiyonlu post tasarımını açıklayın..."></textarea>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">🎬 Reels Video Açıklamaları</div>
+                <div class="textarea-group">
+                    <label>Reels Video (Prodüksiyonsuz)</label>
+                    <div class="emoji-picker">
+                        <button class="emoji-btn" onclick="insertEmoji('reels-no-prod', '🎬')">🎬</button>
+                        <button class="emoji-btn" onclick="insertEmoji('reels-no-prod', '✂️')">✂️</button>
+                        <button class="emoji-btn" onclick="insertEmoji('reels-no-prod', '🎵')">🎵</button>
+                        <button class="emoji-btn" onclick="insertEmoji('reels-no-prod', '•')">•</button>
+                    </div>
+                    <textarea id="reels-no-prod" placeholder="Prodüksiyonsuz reels açıklayın..."></textarea>
+                </div>
+
+                <div class="textarea-group">
+                    <label>Reels Video (Prodüksiyonlu)</label>
+                    <div class="emoji-picker">
+                        <button class="emoji-btn" onclick="insertEmoji('reels-prod', '🎥')">🎥</button>
+                        <button class="emoji-btn" onclick="insertEmoji('reels-prod', '📸')">📸</button>
+                        <button class="emoji-btn" onclick="insertEmoji('reels-prod', '✂️')">✂️</button>
+                        <button class="emoji-btn" onclick="insertEmoji('reels-prod', '•')">•</button>
+                    </div>
+                    <textarea id="reels-prod" placeholder="Prodüksiyonlu reels açıklayın..."></textarea>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">📱 Story & Carousel Açıklamaları</div>
+                <div class="textarea-group">
+                    <label>Story (Hikaye) Tasarımı</label>
+                    <div class="emoji-picker">
+                        <button class="emoji-btn" onclick="insertEmoji('story', '📱')">📱</button>
+                        <button class="emoji-btn" onclick="insertEmoji('story', '✨')">✨</button>
+                        <button class="emoji-btn" onclick="insertEmoji('story', '⏰')">⏰</button>
+                        <button class="emoji-btn" onclick="insertEmoji('story', '•')">•</button>
+                    </div>
+                    <textarea id="story" placeholder="Story tasarımını açıklayın..."></textarea>
+                </div>
+
+                <div class="textarea-group">
+                    <label>Carousel Post Tasarımı</label>
+                    <div class="emoji-picker">
+                        <button class="emoji-btn" onclick="insertEmoji('carousel', '🎡')">🎡</button>
+                        <button class="emoji-btn" onclick="insertEmoji('carousel', '📊')">📊</button>
+                        <button class="emoji-btn" onclick="insertEmoji('carousel', '✨')">✨</button>
+                        <button class="emoji-btn" onclick="insertEmoji('carousel', '•')">•</button>
+                    </div>
+                    <textarea id="carousel" placeholder="Carousel post tasarımını açıklayın..."></textarea>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="saveDescriptions()">💾 Açıklamaları Kaydet</button>
+                <button class="btn btn-secondary" onclick="downloadDescriptionsJSON()">📥 pdf-descriptions.json İndir</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load existing data from GitHub
+        let currentPricing = {};
+        let currentDescriptions = {};
+
+        async function loadData() {
+            try {
+                // Load pricing
+                const pricingRes = await fetch('https://cdn.jsdelivr.net/gh/msarikayapro/reklamproteklif/pricing.json');
+                if (pricingRes.ok) {
+                    currentPricing = await pricingRes.json();
+                    populatePricingForm();
+                }
+
+                // Load descriptions
+                const descRes = await fetch('https://cdn.jsdelivr.net/gh/msarikayapro/reklamproteklif/pdf-descriptions.json');
+                if (descRes.ok) {
+                    currentDescriptions = await descRes.json();
+                    populateDescriptionsForm();
+                }
+            } catch (error) {
+                console.log('Varsayılan değerler kullanılıyor');
+            }
+        }
+
+        function populatePricingForm() {
+            if (currentPricing.post) {
+                document.getElementById('post-tier1').value = currentPricing.post.tier1;
+                document.getElementById('post-tier2').value = currentPricing.post.tier2;
+                document.getElementById('post-tier3').value = currentPricing.post.tier3;
+                document.getElementById('post-tier4').value = currentPricing.post.tier4;
+            }
+
+            if (currentPricing.reelsNoProduction) {
+                document.getElementById('reels-no-tier1').value = currentPricing.reelsNoProduction.tier1;
+                document.getElementById('reels-no-tier2').value = currentPricing.reelsNoProduction.tier2;
+                document.getElementById('reels-no-tier3').value = currentPricing.reelsNoProduction.tier3;
+                document.getElementById('reels-no-tier4').value = currentPricing.reelsNoProduction.tier4;
+            }
+
+            if (currentPricing.reelsWithProduction) {
+                document.getElementById('reels-prod-tier1').value = currentPricing.reelsWithProduction.tier1;
+                document.getElementById('reels-prod-tier2').value = currentPricing.reelsWithProduction.tier2;
+                document.getElementById('reels-prod-tier3').value = currentPricing.reelsWithProduction.tier3;
+                document.getElementById('reels-prod-tier4').value = currentPricing.reelsWithProduction.tier4;
+            }
+
+            if (currentPricing.carousel) {
+                document.getElementById('carousel-tier1').value = currentPricing.carousel.tier1;
+                document.getElementById('carousel-tier2').value = currentPricing.carousel.tier2;
+                document.getElementById('carousel-tier3').value = currentPricing.carousel.tier3;
+                document.getElementById('carousel-tier4').value = currentPricing.carousel.tier4;
+            }
+
+            if (currentPricing.story) {
+                document.getElementById('story-tier1').value = currentPricing.story.tier1;
+                document.getElementById('story-tier2').value = currentPricing.story.tier2;
+                document.getElementById('story-tier3').value = currentPricing.story.tier3;
+                document.getElementById('story-tier4').value = currentPricing.story.tier4;
+            }
+
+            if (currentPricing.meta) {
+                document.getElementById('meta-budget1').value = currentPricing.meta.budget1;
+                document.getElementById('meta-budget2').value = currentPricing.meta.budget2;
+                document.getElementById('meta-budget3').value = currentPricing.meta.budget3;
+                document.getElementById('meta-budget4').value = currentPricing.meta.budget4;
+            }
+
+            if (currentPricing.googleAds) {
+                document.getElementById('google-ads').value = currentPricing.googleAds;
+            }
+
+            if (currentPricing.platformExtra) {
+                document.getElementById('platform-extra').value = currentPricing.platformExtra;
+            }
+        }
+
+        function populateDescriptionsForm() {
+            if (currentDescriptions.metaAds) {
+                const sections = currentDescriptions.metaAds.sections;
+                if (sections[0]) document.getElementById('meta-what').value = sections[0].content;
+                if (sections[1]) document.getElementById('meta-scope').value = sections[1].content;
+                if (sections[2]) document.getElementById('meta-diff').value = sections[2].content;
+            }
+
+            if (currentDescriptions.production) {
+                document.getElementById('production').value = currentDescriptions.production.content;
+            }
+
+            if (currentDescriptions.postDesign) {
+                if (currentDescriptions.postDesign.withoutProduction) {
+                    document.getElementById('post-no-prod').value = currentDescriptions.postDesign.withoutProduction.content;
+                }
+                if (currentDescriptions.postDesign.withProduction) {
+                    document.getElementById('post-prod').value = currentDescriptions.postDesign.withProduction.content;
+                }
+            }
+
+            if (currentDescriptions.reelsVideo) {
+                if (currentDescriptions.reelsVideo.withoutProduction) {
+                    document.getElementById('reels-no-prod').value = currentDescriptions.reelsVideo.withoutProduction.content;
+                }
+                if (currentDescriptions.reelsVideo.withProduction) {
+                    document.getElementById('reels-prod').value = currentDescriptions.reelsVideo.withProduction.content;
+                }
+            }
+
+            if (currentDescriptions.story) {
+                document.getElementById('story').value = currentDescriptions.story.content;
+            }
+
+            if (currentDescriptions.carousel) {
+                document.getElementById('carousel').value = currentDescriptions.carousel.content;
+            }
+        }
+
+        function switchTab(tab) {
+            // Remove active from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active to selected tab
+            if (tab === 'pricing') {
+                document.querySelector('[onclick="switchTab(\'pricing\')"]').classList.add('active');
+                document.getElementById('pricing-tab').classList.add('active');
+            } else {
+                document.querySelector('[onclick="switchTab(\'descriptions\')"]').classList.add('active');
+                document.getElementById('descriptions-tab').classList.add('active');
+            }
+        }
+
+        function insertEmoji(textareaId, emoji) {
+            const textarea = document.getElementById(textareaId);
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            const before = text.substring(0, start);
+            const after = text.substring(end, text.length);
+            textarea.value = before + emoji + after;
+            textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+            textarea.focus();
+        }
+
+        function savePricing() {
+            const pricing = {
+                post: {
+                    tier1: parseInt(document.getElementById('post-tier1').value),
+                    tier2: parseInt(document.getElementById('post-tier2').value),
+                    tier3: parseInt(document.getElementById('post-tier3').value),
+                    tier4: parseInt(document.getElementById('post-tier4').value)
+                },
+                carousel: {
+                    tier1: parseInt(document.getElementById('carousel-tier1').value),
+                    tier2: parseInt(document.getElementById('carousel-tier2').value),
+                    tier3: parseInt(document.getElementById('carousel-tier3').value),
+                    tier4: parseInt(document.getElementById('carousel-tier4').value)
+                },
+                story: {
+                    tier1: parseInt(document.getElementById('story-tier1').value),
+                    tier2: parseInt(document.getElementById('story-tier2').value),
+                    tier3: parseInt(document.getElementById('story-tier3').value),
+                    tier4: parseInt(document.getElementById('story-tier4').value)
+                },
+                reelsNoProduction: {
+                    tier1: parseInt(document.getElementById('reels-no-tier1').value),
+                    tier2: parseInt(document.getElementById('reels-no-tier2').value),
+                    tier3: parseInt(document.getElementById('reels-no-tier3').value),
+                    tier4: parseInt(document.getElementById('reels-no-tier4').value)
+                },
+                reelsWithProduction: {
+                    tier1: parseInt(document.getElementById('reels-prod-tier1').value),
+                    tier2: parseInt(document.getElementById('reels-prod-tier2').value),
+                    tier3: parseInt(document.getElementById('reels-prod-tier3').value),
+                    tier4: parseInt(document.getElementById('reels-prod-tier4').value)
+                },
+                meta: {
+                    budget1: parseInt(document.getElementById('meta-budget1').value),
+                    budget2: parseInt(document.getElementById('meta-budget2').value),
+                    budget3: parseInt(document.getElementById('meta-budget3').value),
+                    budget4: document.getElementById('meta-budget4').value
+                },
+                googleAds: parseInt(document.getElementById('google-ads').value),
+                platformExtra: parseInt(document.getElementById('platform-extra').value),
+                tiers: {
+                    tier1: "1-4 adet",
+                    tier2: "5-8 adet",
+                    tier3: "9-15 adet",
+                    tier4: "16+ adet"
+                }
+            };
+
+            currentPricing = pricing;
+            showSuccessMessage();
+        }
+
+        function saveDescriptions() {
+            const descriptions = {
+                metaAds: {
+                    title: "📊 META REKLAM YÖNETİMİ",
+                    sections: [
+                        {
+                            heading: "Meta Reklam Yönetimi Nedir?",
+                            content: document.getElementById('meta-what').value
+                        },
+                        {
+                            heading: "Hizmet Kapsamı",
+                            content: document.getElementById('meta-scope').value
+                        },
+                        {
+                            heading: "Sosyal Medya Yönetimi ile Meta Reklam Yönetimi Arasındaki Fark",
+                            content: document.getElementById('meta-diff').value
+                        }
+                    ]
+                },
+                production: {
+                    title: "🎥 PRODÜKSIYONLU ÇEKİM HİZMETİ",
+                    content: document.getElementById('production').value
+                },
+                postDesign: {
+                    withoutProduction: {
+                        title: "🎨 POST TASARIMI",
+                        content: document.getElementById('post-no-prod').value
+                    },
+                    withProduction: {
+                        title: "🎨 POST TASARIMI (Prodüksiyonlu)",
+                        content: document.getElementById('post-prod').value
+                    }
+                },
+                reelsVideo: {
+                    withoutProduction: {
+                        title: "🎬 REELS VİDEOLARI",
+                        content: document.getElementById('reels-no-prod').value
+                    },
+                    withProduction: {
+                        title: "🎬 REELS VİDEOLARI (Prodüksiyonlu)",
+                        content: document.getElementById('reels-prod').value
+                    }
+                },
+                story: {
+                    title: "📱 STORY (HİKAYE) TASARIMI",
+                    content: document.getElementById('story').value
+                },
+                carousel: {
+                    title: "🎡 CAROUSEL POST TASARIMI",
+                    content: document.getElementById('carousel').value
+                }
+            };
+
+            currentDescriptions = descriptions;
+            showSuccessMessage();
+        }
+
+        function downloadPricingJSON() {
+            savePricing();
+            const dataStr = JSON.stringify(currentPricing, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'pricing.json';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadDescriptionsJSON() {
+            saveDescriptions();
+            const dataStr = JSON.stringify(currentDescriptions, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'pdf-descriptions.json';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showSuccessMessage() {
+            const msg = document.getElementById('successMessage');
+            msg.classList.add('show');
+            setTimeout(() => {
+                msg.classList.remove('show');
+            }, 3000);
+        }
+
+        // Load data on page load
+        loadData();
+    </script>
+</body>
+</html>

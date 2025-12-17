@@ -1,0 +1,46 @@
+{
+  "post": {
+    "tier1": 1600,
+    "tier2": 1250,
+    "tier3": 1000,
+    "tier4": 900
+  },
+  "carousel": {
+    "tier1": 1600,
+    "tier2": 1250,
+    "tier3": 1000,
+    "tier4": 900
+  },
+  "story": {
+    "tier1": 1600,
+    "tier2": 1250,
+    "tier3": 1000,
+    "tier4": 900
+  },
+  "reelsNoProduction": {
+    "tier1": 2500,
+    "tier2": 2200,
+    "tier3": 1900,
+    "tier4": 1600
+  },
+  "reelsWithProduction": {
+    "tier1": 3500,
+    "tier2": 2500,
+    "tier3": 2000,
+    "tier4": 1900
+  },
+  "meta": {
+    "budget1": 20000,
+    "budget2": 30000,
+    "budget3": 40000,
+    "budget4": "20.000 TL + %10"
+  },
+  "googleAds": 25000,
+  "platformExtra": 3000,
+  "tiers": {
+    "tier1": "1-4 adet",
+    "tier2": "5-8 adet",
+    "tier3": "9-15 adet",
+    "tier4": "16+ adet"
+  }
+}
