@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReklamPro - Fiyat Hesaplama</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #7CB342 0%, #689F38 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 200px;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.95;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        /* Müşteri Bilgileri Formu */
+        .customer-info-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #7CB342 0%, #689F38 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #7CB342;
+            box-shadow: 0 0 0 3px rgba(124, 179, 66, 0.1);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .service-card {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .service-card:hover {
+            border-color: #7CB342;
+            box-shadow: 0 4px 12px rgba(124, 179, 66, 0.15);
+        }
+
+        .service-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #4a4a4a;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .service-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #7CB342 0%, #689F38 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .slider-container {
+            margin: 12px 0;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .slider-label {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .slider-value-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slider-value {
+            color: #7CB342;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .unit-price-inline {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .price-display {
+            background: #e8f5e9;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #558b2f;
+            font-size: 15px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #7CB342;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(124, 179, 66, 0.4);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #7CB342;
+            cursor: pointer;
+            border: none;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .checkbox-option:hover {
+            background: #f5f5f5;
+        }
+
+        .checkbox-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin-right: 8px;
+            accent-color: #7CB342;
+        }
+
+        .checkbox-option label {
+            cursor: pointer;
+            font-size: 13px;
+            color: #555;
+            flex: 1;
+        }
+
+        /* Carousel ve Story Minimal Checkbox */
+        .minimal-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .minimal-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .minimal-checkbox:hover {
+            border-color: #7CB342;
+        }
+
+        .minimal-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            margin-right: 8px;
+            accent-color: #7CB342;
+        }
+
+        .minimal-checkbox.checked {
+            background: #e8f5e9;
+            border-color: #7CB342;
+        }
+
+        .slider-section {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .slider-section.active {
+            display: block;
+        }
+
+        /* Platform Seçimi - Minimal */
+        .platform-selector {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .platform-selector .section-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .platform-minimal {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .platform-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #555;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .platform-tag.included {
+            background: #e8f5e9;
+            border-color: #7CB342;
+            color: #558b2f;
+        }
+
+        .platform-tag.optional input[type="checkbox"] {
+            margin-right: 6px;
+            accent-color: #7CB342;
+        }
+
+        .platform-tag.optional:hover {
+            border-color: #7CB342;
+        }
+
+        .platform-tag.optional.selected {
+            background: #e8f5e9;
+            border-color: #7CB342;
+        }
+
+        .platform-note {
+            font-size: 11px;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .budget-options {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .budget-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+
+        .budget-option:hover {
+            border-color: #7CB342;
+            background: #f9fdf7;
+        }
+
+        .budget-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin-right: 10px;
+            accent-color: #7CB342;
+        }
+
+        .budget-option label {
+            cursor: pointer;
+            font-size: 13px;
+            color: #555;
+            flex: 1;
+        }
+
+        .budget-price {
+            color: #7CB342;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .summary {
+            background: linear-gradient(135deg, #7CB342 0%, #689F38 100%);
+            border-radius: 12px;
+            padding: 25px;
+            color: white;
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .summary-items {
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255,255,255,0.3);
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #7CB342;
+        }
+
+        .btn-primary:hover {
+            background: #f5f5f5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .services-grid, .form-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr !important;
+            }
+
+            .platform-minimal {
+                flex-direction: column;
+            }
+
+            .minimal-options {
+                flex-direction: column;
+            }
+
+            .package-tabs {
+                grid-template-columns: 1fr !important;
+                gap: 8px !important;
+            }
+
+            .package-tab {
+                padding: 12px 15px !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+            }
+
+            .package-name {
+                font-size: 13px !important;
+                margin-bottom: 0 !important;
+                text-align: left !important;
+            }
+
+            .package-desc {
+                font-size: 10px !important;
+                text-align: right !important;
+            }
+
+            .package-selector {
+                padding: 20px !important;
+                margin-bottom: 20px !important;
+            }
+
+            .section-title {
+                font-size: 16px !important;
+                margin-bottom: 15px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .package-tabs {
+                grid-template-columns: 1fr !important;
+            }
+
+            .package-tab {
+                width: 100% !important;
+            }
+        }
+
+        /* Paket Seçimi Stilleri */
+        .package-selector {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .package-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .package-tab {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .package-tab:hover {
+            border-color: #7CB342;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(124, 179, 66, 0.2);
+        }
+
+        .package-tab.active {
+            background: linear-gradient(135deg, #7CB342 0%, #689F38 100%);
+            border-color: #7CB342;
+            color: white;
+        }
+
+        .package-name {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .package-desc {
+            font-size: 11px;
+            opacity: 0.85;
+            display: block;
+        }
+
+        .package-tab.active .package-desc {
+            opacity: 1;
+        }
+
+        /* Minimum Tutar Uyarısı */
+        .minimum-warning {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .minimum-warning.show {
+            display: flex;
+        }
+
+        .warning-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .warning-content {
+            flex: 1;
+        }
+
+        .warning-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #e65100;
+            margin-bottom: 4px;
+        }
+
+        .warning-text {
+            font-size: 12px;
+            color: #ef6c00;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://cdn.jsdelivr.net/gh/msarikayapro/reklamproteklif/reklamprowhite.png" alt="ReklamPro Logo" class="logo">
+            <p>Sosyal Medya Yönetimi Fiyat Hesaplama</p>
+        </div>
+
+        <div class="content">
+            <!-- Müşteri Bilgileri Formu -->
+            <div class="customer-info-section">
+                <div class="section-title">
+                    <span class="section-title-icon">👤</span>
+                    Müşteri Bilgileri
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="customerName">Ad Soyad *</label>
+                        <input type="text" id="customerName" placeholder="Örn: Ahmet Yılmaz">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerCompany">Firma Adı</label>
+                        <input type="text" id="customerCompany" placeholder="Örn: ABC Şirketi">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerEmail">E-posta</label>
+                        <input type="email" id="customerEmail" placeholder="ornek@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerPhone">Telefon</label>
+                        <input type="tel" id="customerPhone" placeholder="0555 123 45 67">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paket Seçimi -->
+            <div class="package-selector">
+                <div class="section-title">
+                    <span class="section-title-icon">📦</span>
+                    Paket Seçimi
+                </div>
+                <div class="package-tabs">
+                    <button class="package-tab active" data-package="custom">
+                        <span class="package-name">Kendim Belirleyeceğim</span>
+                        <span class="package-desc">Esnek & Özelleştirilebilir</span>
+                    </button>
+                    <button class="package-tab" data-package="smart">
+                        <span class="package-name">ReklamPro Smart</span>
+                        <span class="package-desc">4 Video Prodüksiyonlu + 4 Post</span>
+                    </button>
+                    <button class="package-tab" data-package="max">
+                        <span class="package-name">ReklamPro Max</span>
+                        <span class="package-desc">8 Video Prodüksiyonlu + 6 Post + Meta</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="services-grid">
+                <!-- Post Tasarımı -->
+                <div class="service-card">
+                    <div class="service-title">
+                        <span class="service-icon">🎨</span>
+                        Post Tasarımı
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Aylık Adet</span>
+                            <div class="slider-value-box">
+                                <span class="slider-value" id="postValue">0</span>
+                                <span class="unit-price-inline" id="postUnitPrice"></span>
+                            </div>
+                        </div>
+                        <input type="range" id="postSlider" min="0" max="30" value="0" step="1">
+                    </div>
+                    <div class="price-display" id="postPrice">0 TL +KDV</div>
+                </div>
+
+                <!-- Reels Video -->
+                <div class="service-card">
+                    <div class="service-title">
+                        <span class="service-icon">🎬</span>
+                        Reels Video
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Aylık Adet</span>
+                            <div class="slider-value-box">
+                                <span class="slider-value" id="reelsValue">0</span>
+                                <span class="unit-price-inline" id="reelsUnitPrice"></span>
+                            </div>
+                        </div>
+                        <input type="range" id="reelsSlider" min="0" max="20" value="0" step="1">
+                    </div>
+                    <div class="checkbox-option">
+                        <input type="checkbox" id="productionCheck">
+                        <label for="productionCheck">Prodüksiyon Dahil</label>
+                    </div>
+                    <div class="price-display" id="reelsPrice">0 TL +KDV</div>
+                </div>
+
+                <!-- Carousel ve Story Container -->
+                <div class="service-card">
+                    <div class="service-title">
+                        <span class="service-icon">🎡</span>
+                        Carousel & Story
+                    </div>
+                    
+                    <!-- Minimal Checkboxlar -->
+                    <div class="minimal-options">
+                        <label class="minimal-checkbox" id="carouselCheckLabel">
+                            <input type="checkbox" id="carouselCheck">
+                            Carousel Post
+                        </label>
+                        <label class="minimal-checkbox" id="storyCheckLabel">
+                            <input type="checkbox" id="storyCheck">
+                            Story (Hikaye)
+                        </label>
+                    </div>
+
+                    <!-- Carousel Slider -->
+                    <div class="slider-section" id="carouselSliderSection">
+                        <div class="slider-header">
+                            <span class="slider-label">Carousel Adet</span>
+                            <div class="slider-value-box">
+                                <span class="slider-value" id="carouselValue">0</span>
+                                <span class="unit-price-inline" id="carouselUnitPrice"></span>
+                            </div>
+                        </div>
+                        <input type="range" id="carouselSlider" min="0" max="20" value="0" step="1">
+                        <div class="price-display" id="carouselPrice">0 TL +KDV</div>
+                    </div>
+
+                    <!-- Story Slider -->
+                    <div class="slider-section" id="storySliderSection">
+                        <div class="slider-header">
+                            <span class="slider-label">Story Adet</span>
+                            <div class="slider-value-box">
+                                <span class="slider-value" id="storyValue">0</span>
+                                <span class="unit-price-inline" id="storyUnitPrice"></span>
+                            </div>
+                        </div>
+                        <input type="range" id="storySlider" min="0" max="30" value="0" step="1">
+                        <div class="price-display" id="storyPrice">0 TL +KDV</div>
+                    </div>
+                </div>
+
+                <!-- Meta Reklamları -->
+                <div class="service-card">
+                    <div class="service-title">
+                        <span class="service-icon">📊</span>
+                        Meta Reklamları
+                    </div>
+                    <div class="checkbox-option">
+                        <input type="checkbox" id="metaCheck">
+                        <label for="metaCheck">Meta Reklam Yönetimi Ekle</label>
+                    </div>
+                    
+                    <div id="budgetOptions" class="budget-options">
+                        <div class="budget-option">
+                            <input type="radio" id="budget40k" name="budget" value="40000">
+                            <label for="budget40k">0 - 40.000 TL Bütçe</label>
+                            <span class="budget-price">20.000 TL</span>
+                        </div>
+                        <div class="budget-option">
+                            <input type="radio" id="budget120k" name="budget" value="120000">
+                            <label for="budget120k">40.000 - 120.000 TL Bütçe</label>
+                            <span class="budget-price">30.000 TL</span>
+                        </div>
+                        <div class="budget-option">
+                            <input type="radio" id="budget250k" name="budget" value="250000">
+                            <label for="budget250k">120.000 - 250.000 TL Bütçe</label>
+                            <span class="budget-price">40.000 TL</span>
+                        </div>
+                        <div class="budget-option">
+                            <input type="radio" id="budget250kplus" name="budget" value="250000plus">
+                            <label for="budget250kplus">250.000 TL +</label>
+                            <span class="budget-price">20.000 TL + %10</span>
+                        </div>
+                    </div>
+                    
+                    <div class="price-display" id="metaPrice">0 TL +KDV</div>
+                </div>
+
+                <!-- Google Ads -->
+                <div class="service-card">
+                    <div class="service-title">
+                        <span class="service-icon">🔍</span>
+                        Google Ads
+                    </div>
+                    <div class="checkbox-option">
+                        <input type="checkbox" id="googleAdsCheck">
+                        <label for="googleAdsCheck">Google Ads Yönetimi Ekle</label>
+                    </div>
+                    <div class="price-display" id="googleAdsPrice">0 TL +KDV</div>
+                </div>
+            </div>
+
+            <!-- Platform Seçimi - Minimal -->
+            <div class="platform-selector">
+                <div class="section-title">
+                    <span class="section-title-icon">📱</span>
+                    Platform Seçimi
+                </div>
+                <div class="platform-minimal">
+                    <span class="platform-tag included">✓ Instagram (Dahil)</span>
+                    <span class="platform-tag included">✓ Facebook (Dahil)</span>
+                    <label class="platform-tag optional">
+                        <input type="checkbox" id="platformYoutube">
+                        YouTube Shorts (+3.000 TL)
+                    </label>
+                    <label class="platform-tag optional">
+                        <input type="checkbox" id="platformTiktok">
+                        TikTok (+3.000 TL)
+                    </label>
+                    <label class="platform-tag optional">
+                        <input type="checkbox" id="platformTwitter">
+                        X / Twitter (+3.000 TL)
+                    </label>
+                </div>
+                <p class="platform-note">* Her ek platform için +3.000 TL aylık ücret uygulanır.</p>
+            </div>
+
+            <!-- Özet -->
+            <div class="summary">
+                <div class="summary-title">📋 Teklif Özeti</div>
+                
+                <!-- Minimum Tutar Uyarısı -->
+                <div class="minimum-warning" id="minimumWarning">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="warning-content">
+                        <div class="warning-title">Minimum Hizmet Bedeli</div>
+                        <div class="warning-text">Minimum hizmet bedelimiz 15.000 TL +KDV'dir. Lütfen hizmet seçimlerinizi bu tutarı karşılayacak şekilde ayarlayınız.</div>
+                    </div>
+                </div>
+                
+                <div class="summary-items" id="summaryItems">
+                    <!-- JavaScript ile doldurulacak -->
+                </div>
+                <div class="summary-total">
+                    <span>TOPLAM AYLIK ÜCRET:</span>
+                    <span id="summaryTotal">0 TL +KDV</span>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="generatePDF()">📄 PDF İndir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // FİYATLANDIRMA AYARLARI - BURADAN KOLAYLıKLA DEĞİŞTİREBİLİRSİNİZ
+        // ============================================================================
+        
+        let PRICING = {
+            // POST TASARIMI FİYATLARI (TL)
+            post: {
+                tier1: 1600,  // 0-4 adet arası her post
+                tier2: 1250,  // 4-8 adet arası her post
+                tier3: 1000,  // 8-16 adet arası her post
+                tier4: 900    // 16+ adet her post
+            },
+            
+            // CAROUSEL POST FİYATLARI (TL)
+            carousel: {
+                tier1: 1600,  // 0-4 adet arası her carousel
+                tier2: 1250,  // 4-8 adet arası her carousel
+                tier3: 1000,  // 8-16 adet arası her carousel
+                tier4: 900    // 16+ adet her carousel
+            },
+            
+            // STORY (HİKAYE) FİYATLARI (TL)
+            story: {
+                tier1: 1600,  // 0-4 adet arası her story
+                tier2: 1250,  // 4-8 adet arası her story
+                tier3: 1000,  // 8-16 adet arası her story
+                tier4: 900    // 16+ adet her story
+            },
+            
+            // REELS VİDEO FİYATLARI - PRODÜKSİYONSUZ (TL)
+            reelsNoProduction: {
+                tier1: 2500,  // 0-4 adet arası her reels
+                tier2: 2200,  // 4-8 adet arası her reels
+                tier3: 1900,  // 8-16 adet arası her reels
+                tier4: 1600   // 16+ adet her reels
+            },
+            
+            // REELS VİDEO FİYATLARI - PRODÜKSİYONLU (TL)
+            reelsWithProduction: {
+                tier1: 3500,  // 0-4 adet arası her reels
+                tier2: 2500,  // 4-8 adet arası her reels
+                tier3: 2000,  // 8-16 adet arası her reels
+                tier4: 1900   // 16+ adet her reels
+            },
+            
+            // META REKLAM YÖNETİMİ FİYATLARI (TL)
+            meta: {
+                budget1: 20000,  // 0-40K bütçe için
+                budget2: 30000,  // 40-120K bütçe için
+                budget3: 40000,  // 120-250K bütçe için
+                budget4: '20.000 TL + %10'  // 250K+ için (metin olarak)
+            },
+            
+            // GOOGLE ADS FİYATI (TL)
+            googleAds: 25000,
+            
+            // PLATFORM EK ÜCRETLERİ (TL)
+            platformExtra: 3000  // Her ek platform için
+        };
+
+        // GitHub'dan fiyatlandırmayı yükle
+        async function loadPricingFromGitHub() {
+            try {
+                const response = await fetch('https://cdn.jsdelivr.net/gh/msarikayapro/reklamproteklif/pricing.json?t=' + Date.now());
+                if (response.ok) {
+                    const data = await response.json();
+                    PRICING = data;
+                    console.log('✅ Fiyatlandırma GitHub\'dan yüklendi');
+                    updatePrices(); // Fiyatları güncelle
+                }
+            } catch (error) {
+                console.log('⚠️ Varsayılan fiyatlandırma kullanılıyor');
+            }
+        }
+
+        // Sayfa yüklendiğinde fiyatları çek
+        loadPricingFromGitHub();
+
+        // ============================================================================
+        // PDF AÇIKLAMALARI - HİZMET DETAYLARI
+        // ============================================================================
+        
+        const PDF_DESCRIPTIONS = {
+            // Meta Reklam Açıklamaları
+            metaAds: {
+                what: "Meta Reklam Yonetimi; isletmenizin urun veya hizmetlerini, sizi henuz tanimayan yeni potansiyel musterilere Facebook ve Instagram uzerinden reklam yoluyla ulastirma surecidir. Amac; dogru kisilere, dogru mesaji, dogru zamanda gostererek satis ve talep olusturmaktir.",
+                
+                scope: "Meta Reklam Yonetimi; reklam hesaplarinin kurulmasi, hedef kitle analizi, reklam kampanyalarinin olusturulmasi ve yayina alinmasi sureclerini kapsar. Reklamlar yayinlandiktan sonra hesaplar duzenli olarak kontrol edilir, performans verilerine gore optimizasyonlar yapilir ve surec aylik raporlarla ozetlenir. Reklam butcesinin artmasi halinde hizmet bedeli, belirlenen butce dilimlerine gore ve musterinin onayiyla guncellenir. Meta reklam harcamalari hizmet bedeline dahil degildir. Reklam odemeleri, firmanin kendi Meta Business hesabi uzerinden dogrudan Meta platformuna yapilir. Ajansin sorumlulugu, reklam hesaplarinin yonetimi ve optimizasyonu ile sinirlidir.",
+                
+                difference: "Sosyal medya yonetimi, reels ve post paylasimlariyla mevcut takipcilerle etkilesimi ve marka bilinirligini artirirken; organik olarak kesfete duserek zamanla yeni kullanicilara ulasmayi hedefler. Meta reklam yonetimi ise, reklam yoluyla markayi daha once tanimayan kisilere hizli sekilde ulasarak izlenme, etkilesim ve yeni musteri kazanmayi saglar. Veriye dayali yapisi sayesinde, satin alma ihtimali yuksek kisilere dogrudan ulasmayi mumkun kilar."
+            },
+            
+            // Prodüksiyon Açıklamaları
+            production: {
+                description: "Produksiyonlu cekimler ayda 1 cekim gunu olacak sekilde planlanir. Musteri talebi dogrultusunda ek cekim gunu talep edilmesi halinde, her bir ek gun icin 15.000 TL hizmet bedeli ayrica faturalandirilir. Bu hizmet kapsaminda uretilen videolar, 30-60 saniye uzunlugunda, sosyal medya platformlarinda yayinlanmaya uygun icerikleri kapsar. Yuksek produksiyonlu tanitim filmleri, kurumsal reklam filmleri, ozel konsept cekimler ile fuar, televizyon reklamlari veya farkli mecralarda yayinlanacak videolar bu paket kapsamina dahil degildir. Videolarda talep edilebilecek; sunucu veya oyuncu kullanimi, ozel dekor ve sahne tasarimi, ek ekipman ve malzeme kullanimi, sehir disi cekimler gibi ozel taleplerin tum maliyetleri musteriye aittir ve paket fiyatina dahil degildir."
+            },
+            
+            // Post Tasarımı Açıklamaları
+            postDesign: {
+                withProduction: "Aylik icerik planinin olusturulmasi, paylasilacak icerik konularinin ve mesajlarin belirlenmesi, post gorsel tasarimlarinin hazirlanmasi, reklam metin yazarligina uygun metin ve caption'larin yazilmasi. Produksiyonlu post tasarimi hizmetinde, aylik icerik plani dogrultusunda hazirlanacak post tasarimlarinda cekim gunlerinde elde edilen profesyonel fotograf ve goruntuler kullanilir. Bu sayede paylasimlar, markaya ozel ve ozgun gorsellerle hazirlanarakdaha guclu bir marka algisi olusturur. Hazirlanan tum metinler, reklam metin yazarligi (copywriting) tekniklerine uygun sekilde olusturulur ve post aciklamalari (caption) hizmete dahildir.",
+                
+                withoutProduction: "Aylik icerik planinin olusturulmasi, paylasilacak icerik konularinin ve mesajlarin belirlenmesi, post gorsel tasarimlarinin hazirlanmasi, reklam metin yazarligina uygun metin ve caption'larin yazilmasi. Produksiyonsuz post tasarimi hizmetinde, aylik icerik plani dogrultusunda hazirlanacak tasarimlar; musteri tarafindan iletilen gorseller, stok gorseller ve yapay zeka destekli gorseller kullanilarak hazirlanir. Gorsellerin secimi ve icerik kurgusu, markanin hedef kitlesine ve pazarlama hedeflerine uygun sekilde yapilir. Post aciklamalari (caption) ve metinler hizmet kapsamina dahildir."
+            },
+            
+            // Reels Açıklamaları
+            reelsVideo: {
+                withProduction: "Aylik reels icerik planinin olusturulmasi, cekilecek reels video konularinin ve mesajlarin belirlenmesi, profesyonel ekipman ile video cekimlerinin yapilmasi, reels formatina uygun kurgu ve montaj islemleri, video metinlerinin ve aciklamalarinin (caption) hazirlanmasi. Produksiyonlu reels video hizmetinde, aylik icerik plani dogrultusunda cekim gunlerinde profesyonel ekipman ile video cekimleri gerceklestirilir. Videolar, sosyal medya platformlarina uygun sekilde 30-60 saniye araliginda hazirlanir. Hazirlanan videolar; dikkat cekici kurgu, ritim ve anlatim yapisiyla etkilesim ve aksiyon almaya yonlendirecek sekilde duzenlenir. Video aciklamalari (caption) ve temel metinler hizmet kapsamina dahildir.",
+                
+                withoutProduction: "Aylik reels icerik planinin olusturulmasi, reels video konularinin ve mesajlarinin belirlenmesi, musteri tarafindan iletilen video ve gorsellerin kullanilmasi, stok video ve yapay zeka destekli iceriklerin kullanilmasi, reels formatina uygun kurgu ve montaj islemleri, video metinlerinin ve aciklamalarinin (caption) hazirlanmasi. Produksiyonsuz reels video hizmetinde, cekim yapilmaksizin; musteriden temin edilen icerikler, stok videolar ve yapay zeka destekli gorseller kullanilarak reels videolari hazirlanir. Videolar, sosyal medya platformlarinin dinamiklerine uygun sekilde kurgulanir ve paylasim icin hazir hale getirilir. Video aciklamalari (caption) ve metinler hizmet kapsamina dahildir."
+            },
+            
+            // Story Açıklaması
+            story: "Story (hikaye) tasarimi hizmeti; markanin gunluk iletisimini guclendirmek, kampanya ve duyurulari hizli sekilde paylasmak amaciyla sosyal medya platformlarina uygun story iceriklerinin hazirlanmasini kapsar. Story'ler; kampanya, bilgilendirme, yonlendirme ve etkilesim odakli olacak sekilde planlanir ve dikey formata uygun, hizli tuketimeyone lik tasarlanir.",
+            
+            // Carousel Açıklaması
+            carousel: "Carousel post tasarimi hizmeti; birden fazla gorselden olusan, adim adim anlatim, bilgilendirme ve etkilesim odakli sosyal medya paylasimlarinin hazirlanmasini kapsar. Carousel icerikler; urun veya hizmet tanitimi, surec anlatimi, bilgilendirici paylasimlar ve kullaniciyi aksiyon almaya yonlendiren kurgular dogrultusunda planlanir. Her bir gorsel, butunluk saglayacak sekilde tasarlanir ve mesajin kaydirarak takip edilmesini hedefler."
+        };
+
+        const PDF_TEXTS = {
+            companyName: 'ReklamPro',
+            title: 'Sosyal Medya Yonetimi Teklifi',
+            subtitle: 'Dijital Pazarlama Ajansi | Konya',
+            logoUrl: 'https://cdn.jsdelivr.net/gh/msarikayapro/reklamproteklif/reklamprowhite.png',
+            
+            notes: [
+                '* Fiyatlar KDV haricdir.',
+                '* Teklif 30 gun gecerlidir.',
+                '* Odeme kosullari sozlesme ile belirlenir.',
+                '* Instagram ve Facebook temel paketimize dahildir.'
+            ],
+            
+            serviceLabels: {
+                post: 'Post Tasarimi',
+                carousel: 'Carousel Post Tasarimi',
+                story: 'Story (Hikaye) Tasarimi',
+                reels: 'Reels Video',
+                reelsProduction: 'Reels Video (Produksiyonlu)',
+                metaBudget1: 'Meta Reklam (0-40K)',
+                metaBudget2: 'Meta Reklam (40-120K)',
+                metaBudget3: 'Meta Reklam (120-250K)',
+                metaBudget4: 'Meta Reklam (250K+)',
+                googleAds: 'Google Ads Reklam Yonetimi',
+                platformExtra: 'Ek Platform'
+            }
+        };
+
+        // ============================================================================
+        // PAKET SEÇİMİ
+        // ============================================================================
+        
+        // Paket butonlarına event listener ekle
+        document.querySelectorAll('.package-tab').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Aktif paketi değiştir
+                document.querySelectorAll('.package-tab').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const packageType = this.dataset.package;
+                applyPackage(packageType);
+            });
+        });
+
+        function applyPackage(packageType) {
+            switch(packageType) {
+                case 'custom':
+                    // Tümünü sıfırla
+                    document.getElementById('postSlider').value = 0;
+                    document.getElementById('postValue').textContent = 0;
+                    document.getElementById('reelsSlider').value = 0;
+                    document.getElementById('reelsValue').textContent = 0;
+                    document.getElementById('productionCheck').checked = false;
+                    document.getElementById('metaCheck').checked = false;
+                    document.getElementById('budgetOptions').style.display = 'none';
+                    document.querySelectorAll('input[name="budget"]').forEach(r => r.checked = false);
+                    break;
+                    
+                case 'smart':
+                    // 4 Video Prodüksiyonlu + 4 Post
+                    document.getElementById('postSlider').value = 4;
+                    document.getElementById('postValue').textContent = 4;
+                    document.getElementById('reelsSlider').value = 4;
+                    document.getElementById('reelsValue').textContent = 4;
+                    document.getElementById('productionCheck').checked = true;
+                    document.getElementById('metaCheck').checked = false;
+                    document.getElementById('budgetOptions').style.display = 'none';
+                    document.querySelectorAll('input[name="budget"]').forEach(r => r.checked = false);
+                    break;
+                    
+                case 'max':
+                    // 8 Video Prodüksiyonlu + 6 Post + Meta 0-40K
+                    document.getElementById('postSlider').value = 6;
+                    document.getElementById('postValue').textContent = 6;
+                    document.getElementById('reelsSlider').value = 8;
+                    document.getElementById('reelsValue').textContent = 8;
+                    document.getElementById('productionCheck').checked = true;
+                    document.getElementById('metaCheck').checked = true;
+                    document.getElementById('budgetOptions').style.display = 'block';
+                    document.getElementById('budget40k').checked = true;
+                    break;
+            }
+            
+            updatePrices();
+        }
+
+        // ============================================================================
+        // HESAPLAMA FONKSİYONLARI
+        // ============================================================================
+        
+        function formatPrice(price) {
+            return new Intl.NumberFormat('tr-TR').format(Math.round(price)) + ' TL +KDV';
+        }
+
+        function formatPriceForPDF(price) {
+            return new Intl.NumberFormat('tr-TR').format(Math.round(price));
+        }
+
+        function getUnitPrice(count, pricing) {
+            if (count === 0) return 0;
+            if (count <= 4) return pricing.tier1;
+            if (count <= 8) return pricing.tier2;
+            if (count <= 16) return pricing.tier3;
+            return pricing.tier4;
+        }
+
+        function calculatePrice(count, pricing) {
+            if (count === 0) return 0;
+            
+            let total = 0;
+            let remaining = count;
+            
+            if (remaining > 0) {
+                const amount = Math.min(remaining, 4);
+                total += amount * pricing.tier1;
+                remaining -= amount;
+            }
+            
+            if (remaining > 0) {
+                const amount = Math.min(remaining, 4);
+                total += amount * pricing.tier2;
+                remaining -= amount;
+            }
+            
+            if (remaining > 0) {
+                const amount = Math.min(remaining, 8);
+                total += amount * pricing.tier3;
+                remaining -= amount;
+            }
+            
+            if (remaining > 0) {
+                total += remaining * pricing.tier4;
+            }
+            
+            return total;
+        }
+
+        // Carousel ve Story checkbox toggle
+        document.getElementById('carouselCheck').addEventListener('change', function() {
+            const section = document.getElementById('carouselSliderSection');
+            const label = document.getElementById('carouselCheckLabel');
+            if (this.checked) {
+                section.classList.add('active');
+                label.classList.add('checked');
+            } else {
+                section.classList.remove('active');
+                label.classList.remove('checked');
+                document.getElementById('carouselSlider').value = 0;
+                document.getElementById('carouselValue').textContent = 0;
+            }
+            updatePrices();
+        });
+
+        document.getElementById('storyCheck').addEventListener('change', function() {
+            const section = document.getElementById('storySliderSection');
+            const label = document.getElementById('storyCheckLabel');
+            if (this.checked) {
+                section.classList.add('active');
+                label.classList.add('checked');
+            } else {
+                section.classList.remove('active');
+                label.classList.remove('checked');
+                document.getElementById('storySlider').value = 0;
+                document.getElementById('storyValue').textContent = 0;
+            }
+            updatePrices();
+        });
+
+        function updatePrices() {
+            // Post fiyatı
+            const postCount = parseInt(document.getElementById('postSlider').value);
+            const postPrice = calculatePrice(postCount, PRICING.post);
+            const postUnitPrice = getUnitPrice(postCount, PRICING.post);
+            document.getElementById('postPrice').textContent = formatPrice(postPrice);
+            document.getElementById('postUnitPrice').textContent = postCount > 0 ? `(${formatPriceForPDF(postUnitPrice)} TL)` : '';
+
+            // Carousel fiyatı
+            const carouselEnabled = document.getElementById('carouselCheck').checked;
+            const carouselCount = carouselEnabled ? parseInt(document.getElementById('carouselSlider').value) : 0;
+            const carouselPrice = calculatePrice(carouselCount, PRICING.carousel);
+            const carouselUnitPrice = getUnitPrice(carouselCount, PRICING.carousel);
+            document.getElementById('carouselPrice').textContent = formatPrice(carouselPrice);
+            document.getElementById('carouselUnitPrice').textContent = carouselCount > 0 ? `(${formatPriceForPDF(carouselUnitPrice)} TL)` : '';
+
+            // Story fiyatı
+            const storyEnabled = document.getElementById('storyCheck').checked;
+            const storyCount = storyEnabled ? parseInt(document.getElementById('storySlider').value) : 0;
+            const storyPrice = calculatePrice(storyCount, PRICING.story);
+            const storyUnitPrice = getUnitPrice(storyCount, PRICING.story);
+            document.getElementById('storyPrice').textContent = formatPrice(storyPrice);
+            document.getElementById('storyUnitPrice').textContent = storyCount > 0 ? `(${formatPriceForPDF(storyUnitPrice)} TL)` : '';
+
+            // Reels fiyatı
+            const reelsCount = parseInt(document.getElementById('reelsSlider').value);
+            const hasProduction = document.getElementById('productionCheck').checked;
+            const reelsPricing = hasProduction ? PRICING.reelsWithProduction : PRICING.reelsNoProduction;
+            const reelsPrice = calculatePrice(reelsCount, reelsPricing);
+            const reelsUnitPrice = getUnitPrice(reelsCount, reelsPricing);
+            document.getElementById('reelsPrice').textContent = formatPrice(reelsPrice);
+            document.getElementById('reelsUnitPrice').textContent = reelsCount > 0 ? `(${formatPriceForPDF(reelsUnitPrice)} TL)` : '';
+
+            // Meta reklam fiyatı
+            let metaPrice = 0;
+            let metaPriceText = '0 TL +KDV';
+            const metaChecked = document.getElementById('metaCheck').checked;
+            if (metaChecked) {
+                const selectedBudget = document.querySelector('input[name="budget"]:checked');
+                if (selectedBudget) {
+                    if (selectedBudget.value === '250000plus') {
+                        metaPriceText = PRICING.meta.budget4 + ' +KDV';
+                        metaPrice = 0; // Toplama dahil edilmeyecek
+                    } else if (selectedBudget.value === '40000') {
+                        metaPrice = PRICING.meta.budget1;
+                        metaPriceText = formatPrice(metaPrice);
+                    } else if (selectedBudget.value === '120000') {
+                        metaPrice = PRICING.meta.budget2;
+                        metaPriceText = formatPrice(metaPrice);
+                    } else if (selectedBudget.value === '250000') {
+                        metaPrice = PRICING.meta.budget3;
+                        metaPriceText = formatPrice(metaPrice);
+                    }
+                }
+            }
+            document.getElementById('metaPrice').textContent = metaPriceText;
+
+            // Google Ads fiyatı
+            const googleAdsChecked = document.getElementById('googleAdsCheck').checked;
+            const googleAdsPrice = googleAdsChecked ? PRICING.googleAds : 0;
+            document.getElementById('googleAdsPrice').textContent = formatPrice(googleAdsPrice);
+
+            // Platform ek ücretleri
+            let platformPrice = 0;
+            const platformCheckboxes = ['platformYoutube', 'platformTiktok', 'platformTwitter'];
+            
+            platformCheckboxes.forEach(id => {
+                if (document.getElementById(id).checked) {
+                    platformPrice += PRICING.platformExtra;
+                }
+            });
+
+            // Toplam
+            const total = postPrice + carouselPrice + storyPrice + reelsPrice + metaPrice + googleAdsPrice + platformPrice;
+
+            // Özet güncelle
+            const summaryItems = document.getElementById('summaryItems');
+            summaryItems.innerHTML = '';
+
+            if (postCount > 0) {
+                summaryItems.innerHTML += `
+                    <div class="summary-item">
+                        <span class="summary-label">Post Tasarımı (${postCount} adet)</span>
+                        <span class="summary-value">${formatPrice(postPrice)}</span>
+                    </div>
+                `;
+            }
+
+            if (carouselCount > 0) {
+                summaryItems.innerHTML += `
+                    <div class="summary-item">
+                        <span class="summary-label">Carousel Post (${carouselCount} adet)</span>
+                        <span class="summary-value">${formatPrice(carouselPrice)}</span>
+                    </div>
+                `;
+            }
+
+            if (storyCount > 0) {
+                summaryItems.innerHTML += `
+                    <div class="summary-item">
+                        <span class="summary-label">Story / Hikaye (${storyCount} adet)</span>
+                        <span class="summary-value">${formatPrice(storyPrice)}</span>
+                    </div>
+                `;
+            }
+
+            if (reelsCount > 0) {
+                const reelsLabel = hasProduction ? `Reels Video - Prodüksiyonlu (${reelsCount} adet)` : `Reels Video (${reelsCount} adet)`;
+                summaryItems.innerHTML += `
+                    <div class="summary-item">
+                        <span class="summary-label">${reelsLabel}</span>
+                        <span class="summary-value">${formatPrice(reelsPrice)}</span>
+                    </div>
+                `;
+            }
+
+            if (metaChecked && metaPriceText !== '0 TL +KDV') {
+                const selectedBudget = document.querySelector('input[name="budget"]:checked');
+                let metaLabel = 'Meta Reklam Yönetimi';
+                if (selectedBudget) {
+                    if (selectedBudget.value === '250000plus') {
+                        metaLabel = 'Meta Reklam (250K+)';
+                    } else if (selectedBudget.value === '40000') {
+                        metaLabel = 'Meta Reklam (0-40K)';
+                    } else if (selectedBudget.value === '120000') {
+                        metaLabel = 'Meta Reklam (40-120K)';
+                    } else if (selectedBudget.value === '250000') {
+                        metaLabel = 'Meta Reklam (120-250K)';
+                    }
+                }
+                summaryItems.innerHTML += `
+                    <div class="summary-item">
+                        <span class="summary-label">${metaLabel}</span>
+                        <span class="summary-value">${metaPriceText}</span>
+                    </div>
+                `;
+            }
+
+            if (googleAdsChecked) {
+                summaryItems.innerHTML += `
+                    <div class="summary-item">
+                        <span class="summary-label">Google Ads Yönetimi</span>
+                        <span class="summary-value">${formatPrice(googleAdsPrice)}</span>
+                    </div>
+                `;
+            }
+
+            // Platform ek ücretleri göster
+            if (platformPrice > 0) {
+                const selectedPlatforms = [];
+                if (document.getElementById('platformYoutube').checked) selectedPlatforms.push('YouTube Shorts');
+                if (document.getElementById('platformTiktok').checked) selectedPlatforms.push('TikTok');
+                if (document.getElementById('platformTwitter').checked) selectedPlatforms.push('X (Twitter)');
+                
+                summaryItems.innerHTML += `
+                    <div class="summary-item">
+                        <span class="summary-label">Ek Platformlar (${selectedPlatforms.join(', ')})</span>
+                        <span class="summary-value">${formatPrice(platformPrice)}</span>
+                    </div>
+                `;
+            }
+
+            document.getElementById('summaryTotal').textContent = formatPrice(total);
+
+            // Minimum tutar kontrolü (15.000 TL)
+            const MINIMUM_AMOUNT = 15000;
+            const warningElement = document.getElementById('minimumWarning');
+            
+            if (total > 0 && total < MINIMUM_AMOUNT) {
+                warningElement.classList.add('show');
+            } else {
+                warningElement.classList.remove('show');
+            }
+
+            // Budget seçeneklerindeki fiyatları güncelle
+            document.querySelectorAll('.budget-option .budget-price').forEach((elem, index) => {
+                if (index === 0) {
+                    elem.textContent = formatPrice(PRICING.meta.budget1).replace(' +KDV', '');
+                } else if (index === 1) {
+                    elem.textContent = formatPrice(PRICING.meta.budget2).replace(' +KDV', '');
+                } else if (index === 2) {
+                    elem.textContent = formatPrice(PRICING.meta.budget3).replace(' +KDV', '');
+                } else if (index === 3) {
+                    elem.textContent = PRICING.meta.budget4;
+                }
+            });
+        }
+
+        // Event listeners
+        document.getElementById('postSlider').addEventListener('input', function() {
+            document.getElementById('postValue').textContent = this.value;
+            switchToCustomPackage();
+            updatePrices();
+        });
+
+        document.getElementById('carouselSlider').addEventListener('input', function() {
+            document.getElementById('carouselValue').textContent = this.value;
+            switchToCustomPackage();
+            updatePrices();
+        });
+
+        document.getElementById('storySlider').addEventListener('input', function() {
+            document.getElementById('storyValue').textContent = this.value;
+            switchToCustomPackage();
+            updatePrices();
+        });
+
+        document.getElementById('reelsSlider').addEventListener('input', function() {
+            document.getElementById('reelsValue').textContent = this.value;
+            switchToCustomPackage();
+            updatePrices();
+        });
+
+        function switchToCustomPackage() {
+            // Aktif paketi Custom'a çevir
+            document.querySelectorAll('.package-tab').forEach(b => b.classList.remove('active'));
+            document.querySelector('.package-tab[data-package="custom"]').classList.add('active');
+        }
+
+        document.getElementById('productionCheck').addEventListener('change', function() {
+            switchToCustomPackage();
+            updatePrices();
+        });
+
+        document.getElementById('metaCheck').addEventListener('change', function() {
+            document.getElementById('budgetOptions').style.display = this.checked ? 'block' : 'none';
+            if (!this.checked) {
+                document.querySelectorAll('input[name="budget"]').forEach(radio => radio.checked = false);
+            }
+            switchToCustomPackage();
+            updatePrices();
+        });
+
+        document.querySelectorAll('input[name="budget"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                switchToCustomPackage();
+                updatePrices();
+            });
+        });
+
+        document.getElementById('googleAdsCheck').addEventListener('change', function() {
+            switchToCustomPackage();
+            updatePrices();
+        });
+
+        // Platform checkbox event listeners
+        ['platformYoutube', 'platformTiktok', 'platformTwitter'].forEach(id => {
+            document.getElementById(id).addEventListener('change', function() {
+                const parent = this.closest('.platform-tag');
+                if (this.checked) {
+                    parent.classList.add('selected');
+                } else {
+                    parent.classList.remove('selected');
+                }
+                updatePrices();
+            });
+        });
+
+        // Sayfa yüklendiğinde fiyatları güncelle
+        updatePrices();
+
+        // ============================================================================
+        // PDF OLUŞTURMA FONKSİYONU - jsPDF + html2canvas
+        // ============================================================================
+        
+        async function generatePDF() {
+            // Müşteri bilgilerini kontrol et
+            const customerName = document.getElementById('customerName').value.trim();
+            
+            if (!customerName) {
+                alert('Lütfen en az müşteri adını giriniz.');
+                return;
+            }
+
+            // Toplam tutarı hesapla
+            const postCount = parseInt(document.getElementById('postSlider').value);
+            const postPrice = calculatePrice(postCount, PRICING.post);
+            
+            const reelsCount = parseInt(document.getElementById('reelsSlider').value);
+            const hasProduction = document.getElementById('productionCheck').checked;
+            const reelsPricing = hasProduction ? PRICING.reelsWithProduction : PRICING.reelsNoProduction;
+            const reelsPrice = calculatePrice(reelsCount, reelsPricing);
+            
+            const carouselEnabled = document.getElementById('carouselCheck').checked;
+            const carouselCount = carouselEnabled ? parseInt(document.getElementById('carouselSlider').value) : 0;
+            const carouselPrice = calculatePrice(carouselCount, PRICING.carousel);
+            
+            const storyEnabled = document.getElementById('storyCheck').checked;
+            const storyCount = storyEnabled ? parseInt(document.getElementById('storySlider').value) : 0;
+            const storyPrice = calculatePrice(storyCount, PRICING.story);
+            
+            let metaPrice = 0;
+            const hasMetaAd = document.getElementById('metaCheck').checked;
+            if (hasMetaAd) {
+                const selectedBudget = document.querySelector('input[name="budget"]:checked');
+                if (selectedBudget && selectedBudget.value !== '250000plus') {
+                    if (selectedBudget.value === '40000') metaPrice = PRICING.meta.budget1;
+                    else if (selectedBudget.value === '120000') metaPrice = PRICING.meta.budget2;
+                    else if (selectedBudget.value === '250000') metaPrice = PRICING.meta.budget3;
+                }
+            }
+            
+            const googleAdsChecked = document.getElementById('googleAdsCheck').checked;
+            const googleAdsPrice = googleAdsChecked ? PRICING.googleAds : 0;
+            
+            let platformPrice = 0;
+            if (document.getElementById('platformYoutube').checked) platformPrice += PRICING.platformExtra;
+            if (document.getElementById('platformTiktok').checked) platformPrice += PRICING.platformExtra;
+            if (document.getElementById('platformTwitter').checked) platformPrice += PRICING.platformExtra;
+            
+            const total = postPrice + carouselPrice + storyPrice + reelsPrice + metaPrice + googleAdsPrice + platformPrice;
+
+            // Minimum tutar kontrolü
+            const MINIMUM_AMOUNT = 15000;
+            if (total < MINIMUM_AMOUNT) {
+                alert('⚠️ Minimum Hizmet Bedeli Uyarısı\n\nMinimum hizmet bedelimiz 15.000 TL +KDV\'dir.\n\nMevcut seçimleriniz: ' + formatPrice(total) + '\n\nLütfen hizmet seçimlerinizi artırarak minimum tutarı karşılayınız.');
+                return;
+            }
+
+            try {
+                // Loading göster
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '⏳ PDF Hazırlanıyor...';
+                btn.disabled = true;
+
+                // GitHub'dan dosyaları çek
+                const baseUrl = 'https://cdn.jsdelivr.net/gh/msarikayapro/reklamproteklif/';
+                
+                const [descriptionsResponse, templateResponse, stylesResponse] = await Promise.all([
+                    fetch(baseUrl + 'pdf-descriptions.json'),
+                    fetch(baseUrl + 'pdf-template.html'),
+                    fetch(baseUrl + 'pdf-styles.css')
+                ]);
+
+                const descriptions = await descriptionsResponse.json();
+                const templateHtml = await templateResponse.text();
+                const styles = await stylesResponse.text();
+
+                // Müşteri bilgileri
+                const customerCompany = document.getElementById('customerCompany').value.trim();
+                const customerEmail = document.getElementById('customerEmail').value.trim();
+                const customerPhone = document.getElementById('customerPhone').value.trim();
+                
+                const today = new Date();
+                const dateStr = today.toLocaleDateString('tr-TR', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+
+                // Hizmet bilgilerini topla
+                const postCount = parseInt(document.getElementById('postSlider').value);
+                const postPrice = calculatePrice(postCount, PRICING.post);
+                
+                const reelsCount = parseInt(document.getElementById('reelsSlider').value);
+                const hasProduction = document.getElementById('productionCheck').checked;
+                const reelsPricing = hasProduction ? PRICING.reelsWithProduction : PRICING.reelsNoProduction;
+                const reelsPrice = calculatePrice(reelsCount, reelsPricing);
+                
+                const carouselEnabled = document.getElementById('carouselCheck').checked;
+                const carouselCount = carouselEnabled ? parseInt(document.getElementById('carouselSlider').value) : 0;
+                const carouselPrice = calculatePrice(carouselCount, PRICING.carousel);
+                
+                const storyEnabled = document.getElementById('storyCheck').checked;
+                const storyCount = storyEnabled ? parseInt(document.getElementById('storySlider').value) : 0;
+                const storyPrice = calculatePrice(storyCount, PRICING.story);
+                
+                const hasMetaAd = document.getElementById('metaCheck').checked;
+                let metaPrice = 0;
+                let metaPriceText = '0 TL +KDV';
+                let metaBudgetType = '';
+                
+                if (hasMetaAd) {
+                    const selectedBudget = document.querySelector('input[name="budget"]:checked');
+                    if (selectedBudget) {
+                        if (selectedBudget.value === '250000plus') {
+                            metaPriceText = PRICING.meta.budget4 + ' +KDV';
+                            metaBudgetType = '250kplus';
+                        } else if (selectedBudget.value === '40000') {
+                            metaPrice = PRICING.meta.budget1;
+                            metaPriceText = formatPrice(metaPrice);
+                        } else if (selectedBudget.value === '120000') {
+                            metaPrice = PRICING.meta.budget2;
+                            metaPriceText = formatPrice(metaPrice);
+                        } else if (selectedBudget.value === '250000') {
+                            metaPrice = PRICING.meta.budget3;
+                            metaPriceText = formatPrice(metaPrice);
+                        }
+                    }
+                }
+                
+                const googleAdsChecked = document.getElementById('googleAdsCheck').checked;
+                const googleAdsPrice = googleAdsChecked ? PRICING.googleAds : 0;
+                
+                let platformPrice = 0;
+                const selectedPlatforms = ['Instagram', 'Facebook'];
+                if (document.getElementById('platformYoutube').checked) {
+                    selectedPlatforms.push('YouTube Shorts');
+                    platformPrice += PRICING.platformExtra;
+                }
+                if (document.getElementById('platformTiktok').checked) {
+                    selectedPlatforms.push('TikTok');
+                    platformPrice += PRICING.platformExtra;
+                }
+                if (document.getElementById('platformTwitter').checked) {
+                    selectedPlatforms.push('X (Twitter)');
+                    platformPrice += PRICING.platformExtra;
+                }
+                
+                const total = postPrice + carouselPrice + storyPrice + reelsPrice + metaPrice + googleAdsPrice + platformPrice;
+
+                // Template oluştur
+                let pdfHtml = `
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <style>${styles}</style>
+                    </head>
+                    <body>
+                        ${templateHtml}
+                    </body>
+                    </html>
+                `;
+
+                // Temporary div oluştur
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = pdfHtml;
+                tempDiv.style.position = 'fixed';
+                tempDiv.style.top = '0';
+                tempDiv.style.left = '0';
+                tempDiv.style.width = '210mm';
+                tempDiv.style.background = 'white';
+                tempDiv.style.zIndex = '-1';
+                document.body.appendChild(tempDiv);
+
+                // DOM'un render olmasını bekle
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                // Müşteri bilgilerini doldur
+                tempDiv.querySelector('#pdf-customer-name').textContent = customerName;
+                tempDiv.querySelector('#pdf-date').textContent = dateStr;
+                
+                if (customerCompany) {
+                    tempDiv.querySelector('#pdf-company-wrapper').style.display = 'block';
+                    tempDiv.querySelector('#pdf-customer-company').textContent = customerCompany;
+                }
+                if (customerEmail) {
+                    tempDiv.querySelector('#pdf-email-wrapper').style.display = 'block';
+                    tempDiv.querySelector('#pdf-customer-email').textContent = customerEmail;
+                }
+                if (customerPhone) {
+                    tempDiv.querySelector('#pdf-phone-wrapper').style.display = 'block';
+                    tempDiv.querySelector('#pdf-customer-phone').textContent = customerPhone;
+                }
+
+                // Platform bilgisi
+                tempDiv.querySelector('#pdf-platforms').textContent = selectedPlatforms.join(', ');
+
+                // Hizmetleri ekle
+                let servicesHtml = '';
+                
+                if (postCount > 0) {
+                    servicesHtml += `
+                        <div class="service-item">
+                            <span class="service-name">Post Tasarımı (${postCount} adet)</span>
+                            <span class="service-price">${formatPrice(postPrice)}</span>
+                        </div>
+                    `;
+                }
+                
+                if (reelsCount > 0) {
+                    const reelsLabel = hasProduction ? `Reels Video - Prodüksiyonlu (${reelsCount} adet)` : `Reels Video (${reelsCount} adet)`;
+                    servicesHtml += `
+                        <div class="service-item">
+                            <span class="service-name">${reelsLabel}</span>
+                            <span class="service-price">${formatPrice(reelsPrice)}</span>
+                        </div>
+                    `;
+                }
+                
+                if (carouselCount > 0) {
+                    servicesHtml += `
+                        <div class="service-item">
+                            <span class="service-name">Carousel Post (${carouselCount} adet)</span>
+                            <span class="service-price">${formatPrice(carouselPrice)}</span>
+                        </div>
+                    `;
+                }
+                
+                if (storyCount > 0) {
+                    servicesHtml += `
+                        <div class="service-item">
+                            <span class="service-name">Story / Hikaye (${storyCount} adet)</span>
+                            <span class="service-price">${formatPrice(storyPrice)}</span>
+                        </div>
+                    `;
+                }
+                
+                if (hasMetaAd && metaPriceText !== '0 TL +KDV') {
+                    let metaLabel = 'Meta Reklam Yönetimi';
+                    if (metaBudgetType === '250kplus') {
+                        metaLabel = 'Meta Reklam (250K+)';
+                    }
+                    servicesHtml += `
+                        <div class="service-item">
+                            <span class="service-name">${metaLabel}</span>
+                            <span class="service-price">${metaPriceText}</span>
+                        </div>
+                    `;
+                }
+                
+                if (googleAdsChecked) {
+                    servicesHtml += `
+                        <div class="service-item">
+                            <span class="service-name">Google Ads Yönetimi</span>
+                            <span class="service-price">${formatPrice(googleAdsPrice)}</span>
+                        </div>
+                    `;
+                }
+                
+                if (platformPrice > 0) {
+                    const extraPlatforms = [];
+                    if (document.getElementById('platformYoutube').checked) extraPlatforms.push('YouTube Shorts');
+                    if (document.getElementById('platformTiktok').checked) extraPlatforms.push('TikTok');
+                    if (document.getElementById('platformTwitter').checked) extraPlatforms.push('X (Twitter)');
+                    
+                    servicesHtml += `
+                        <div class="service-item">
+                            <span class="service-name">Ek Platformlar (${extraPlatforms.join(', ')})</span>
+                            <span class="service-price">${formatPrice(platformPrice)}</span>
+                        </div>
+                    `;
+                }
+                
+                tempDiv.querySelector('#pdf-services-list').innerHTML = servicesHtml;
+                tempDiv.querySelector('#pdf-total').textContent = formatPrice(total);
+
+                // Açıklamaları ekle
+                let descriptionsHtml = '';
+                
+                if (hasMetaAd) {
+                    descriptionsHtml += `
+                        <div class="service-description">
+                            <h3 class="service-desc-title">${descriptions.metaAds.title}</h3>
+                            ${descriptions.metaAds.sections.map(section => `
+                                <h4 class="service-desc-heading">${section.heading}</h4>
+                                <div class="service-desc-content">${section.content}</div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                if (hasProduction && (reelsCount > 0 || postCount > 0)) {
+                    descriptionsHtml += `
+                        <div class="service-description">
+                            <h3 class="service-desc-title">${descriptions.production.title}</h3>
+                            <div class="service-desc-content">${descriptions.production.content}</div>
+                        </div>
+                    `;
+                }
+                
+                if (postCount > 0) {
+                    const postDesc = hasProduction ? descriptions.postDesign.withProduction : descriptions.postDesign.withoutProduction;
+                    descriptionsHtml += `
+                        <div class="service-description">
+                            <h3 class="service-desc-title">${postDesc.title}</h3>
+                            <div class="service-desc-content">${postDesc.content}</div>
+                        </div>
+                    `;
+                }
+                
+                if (reelsCount > 0) {
+                    const reelsDesc = hasProduction ? descriptions.reelsVideo.withProduction : descriptions.reelsVideo.withoutProduction;
+                    descriptionsHtml += `
+                        <div class="service-description">
+                            <h3 class="service-desc-title">${reelsDesc.title}</h3>
+                            <div class="service-desc-content">${reelsDesc.content}</div>
+                        </div>
+                    `;
+                }
+                
+                if (storyCount > 0) {
+                    descriptionsHtml += `
+                        <div class="service-description">
+                            <h3 class="service-desc-title">${descriptions.story.title}</h3>
+                            <div class="service-desc-content">${descriptions.story.content}</div>
+                        </div>
+                    `;
+                }
+                
+                if (carouselCount > 0) {
+                    descriptionsHtml += `
+                        <div class="service-description">
+                            <h3 class="service-desc-title">${descriptions.carousel.title}</h3>
+                            <div class="service-desc-content">${descriptions.carousel.content}</div>
+                        </div>
+                    `;
+                }
+                
+                tempDiv.querySelector('#pdf-descriptions').innerHTML = `
+                    <div class="description-header">HİZMET DETAYLARI VE AÇIKLAMALAR</div>
+                    ${descriptionsHtml}
+                `;
+
+                // Tekrar render bekle
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // PDF oluştur
+                const { jsPDF } = window.jspdf;
+                
+                const pdfContainer = tempDiv.querySelector('.pdf-container');
+                
+                // html2canvas ile görüntü al
+                const canvas = await html2canvas(pdfContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    width: pdfContainer.offsetWidth,
+                    height: pdfContainer.offsetHeight,
+                    windowWidth: pdfContainer.scrollWidth,
+                    windowHeight: pdfContainer.scrollHeight
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const imgWidth = 210; // A4 width in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                // Tek uzun sayfa olarak PDF oluştur
+                const pdf = new jsPDF('p', 'mm', [imgWidth, imgHeight]);
+                pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+
+                // PDF'i kaydet
+                const fileName = `ReklamPro_Teklif_${customerName.replace(/\s+/g, '_')}_${today.getFullYear()}_${String(today.getMonth() + 1).padStart(2, '0')}_${String(today.getDate()).padStart(2, '0')}.pdf`;
+                pdf.save(fileName);
+
+                // Cleanup
+                document.body.removeChild(tempDiv);
+                
+                // Button'u eski haline getir
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+
+            } catch (error) {
+                console.error('PDF oluşturma hatası:', error);
+                alert('PDF oluşturulurken bir hata oluştu: ' + error.message);
+                
+                // Button'u eski haline getir
+                const btn = event.target;
+                btn.innerHTML = '📄 PDF İndir';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
