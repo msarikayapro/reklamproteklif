@@ -966,20 +966,25 @@
         // GitHub'dan fiyatlandırmayı yükle
         async function loadPricingFromGitHub() {
             try {
-                const response = await fetch('https://cdn.jsdelivr.net/gh/msarikayapro/reklamproteklif/pricing.json?t=' + Date.now());
+                // Cache bypass için timestamp ekle
+                const timestamp = new Date().getTime();
+                const response = await fetch(`https://raw.githubusercontent.com/msarikayapro/reklamproteklif/main/pricing.json?v=${timestamp}`);
+                
                 if (response.ok) {
                     const data = await response.json();
                     PRICING = data;
-                    console.log('✅ Fiyatlandırma GitHub\'dan yüklendi');
+                    console.log('✅ Fiyatlandırma GitHub\'dan yüklendi:', PRICING);
                     updatePrices(); // Fiyatları güncelle
+                } else {
+                    console.log('⚠️ Varsayılan fiyatlandırma kullanılıyor (HTTP hata)');
                 }
             } catch (error) {
-                console.log('⚠️ Varsayılan fiyatlandırma kullanılıyor');
+                console.log('⚠️ Varsayılan fiyatlandırma kullanılıyor (Fetch hatası):', error);
             }
         }
 
         // Sayfa yüklendiğinde fiyatları çek
-        loadPricingFromGitHub();
+        window.addEventListener('DOMContentLoaded', loadPricingFromGitHub);
 
         // ============================================================================
         // PDF AÇIKLAMALARI - HİZMET DETAYLARI
@@ -1516,7 +1521,7 @@
                 btn.disabled = true;
 
                 // GitHub'dan dosyaları çek
-                const baseUrl = 'https://cdn.jsdelivr.net/gh/msarikayapro/reklamproteklif/';
+                const baseUrl = 'https://raw.githubusercontent.com/msarikayapro/reklamproteklif/main/';
                 
                 const [descriptionsResponse, templateResponse, stylesResponse] = await Promise.all([
                     fetch(baseUrl + 'pdf-descriptions.json'),

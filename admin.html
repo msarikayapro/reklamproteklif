@@ -636,14 +636,14 @@
         async function loadData() {
             try {
                 // Load pricing
-                const pricingRes = await fetch('https://cdn.jsdelivr.net/gh/msarikayapro/reklamproteklif/pricing.json');
+                const pricingRes = await fetch('https://raw.githubusercontent.com/msarikayapro/reklamproteklif/main/pricing.json?t=' + Date.now());
                 if (pricingRes.ok) {
                     currentPricing = await pricingRes.json();
                     populatePricingForm();
                 }
 
                 // Load descriptions
-                const descRes = await fetch('https://cdn.jsdelivr.net/gh/msarikayapro/reklamproteklif/pdf-descriptions.json');
+                const descRes = await fetch('https://raw.githubusercontent.com/msarikayapro/reklamproteklif/main/pdf-descriptions.json?t=' + Date.now());
                 if (descRes.ok) {
                     currentDescriptions = await descRes.json();
                     populateDescriptionsForm();
