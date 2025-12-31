@@ -652,6 +652,59 @@
             color: #ef6c00;
             line-height: 1.5;
         }
+
+        /* Manuel Hizmet Kartları */
+        .manual-service-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .manual-service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .manual-service-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a90e2;
+        }
+
+        .remove-service-btn {
+            background: #ff5252;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .remove-service-btn:hover {
+            background: #d32f2f;
+            transform: scale(1.05);
+        }
+
+        .manual-service-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .manual-service-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #4a90e2;
+            text-align: right;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -875,6 +928,127 @@
                 <p class="platform-note">* Her ek platform için +3.000 TL aylık ücret uygulanır.</p>
             </div>
 
+            <!-- Ek Notlar -->
+            <div class="customer-info-section">
+                <div class="section-title">
+                    <span class="section-title-icon">📝</span>
+                    Ek Notlar (PDF'e Eklenecek)
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label for="extraNotes">Teklif için ek açıklamalarınızı yazın (opsiyonel)</label>
+                    <textarea id="extraNotes" rows="4" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical;" placeholder="Örn: Kampanya süresince %10 indirim, Ödeme koşulları, Özel durumlar vb."></textarea>
+                </div>
+            </div>
+
+            <!-- Manuel Hizmet Ekleme -->
+            <div class="customer-info-section" style="background: #f0f8ff; border-color: #4a90e2;">
+                <div class="section-title">
+                    <span class="section-title-icon">➕</span>
+                    Manuel Hizmet Ekle
+                </div>
+                <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: #0d47a1;">
+                    💡 <strong>İpucu:</strong> Araçta olmayan özel hizmetleri buradan ekleyebilirsiniz. Minimum tutar kontrolü bu hizmetler için uygulanmaz.
+                </div>
+                
+                <div id="manualServicesContainer">
+                    <!-- Manuel hizmetler buraya eklenecek -->
+                </div>
+                
+                <button class="btn btn-secondary" onclick="addManualService()" style="width: 100%; background: #4a90e2; color: white; border: none; margin-top: 10px;">
+                    ➕ Yeni Hizmet Ekle
+                </button>
+
+                <!-- Manuel Hizmetler Toplamı -->
+                <div id="manualServicesTotal" style="display: none; margin-top: 20px; padding: 15px; background: white; border-radius: 10px; border: 2px solid #4a90e2;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <span style="font-size: 16px; font-weight: 600; color: #333;">📊 Manuel Hizmetler Ara Toplam:</span>
+                        <span id="manualSubtotal" style="font-size: 18px; font-weight: 700; color: #4a90e2;">0 TL +KDV</span>
+                    </div>
+                    
+                    <!-- İndirim Alanı -->
+                    <div style="border-top: 2px dashed #e0e0e0; padding-top: 15px;">
+                        <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer;">
+                            <input type="checkbox" id="manualDiscountCheck" onchange="toggleManualDiscount()" style="width: 18px; height: 18px;">
+                            <span style="font-size: 14px; font-weight: 600; color: #555;">🎁 İndirim Uygula</span>
+                        </label>
+                        
+                        <div id="manualDiscountSection" style="display: none; margin-top: 10px;">
+                            <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end;">
+                                <div>
+                                    <label style="font-size: 12px; color: #666; margin-bottom: 5px; display: block;">İndirim Tutarı (veya %15 formatında)</label>
+                                    <input type="text" id="manualDiscountInput" placeholder="Örn: 1000 veya %15" onchange="updateManualDiscount()" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px;">
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">İndirim:</div>
+                                    <div id="manualDiscountAmount" style="font-size: 16px; font-weight: 600; color: #f44336;">-0 TL</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Net Toplam -->
+                    <div style="border-top: 2px solid #4a90e2; margin-top: 15px; padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 18px; font-weight: 700; color: #333;">💰 Manuel Hizmetler Net Toplam:</span>
+                        <span id="manualNetTotal" style="font-size: 20px; font-weight: 700; color: #4a90e2;">0 TL +KDV</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aylık Hizmetler İndirimi -->
+            <div class="customer-info-section" style="background: #fff8e1; border-color: #ffa726;">
+                <div class="section-title">
+                    <span class="section-title-icon">🎁</span>
+                    Aylık Hizmetler İndirimi (Opsiyonel)
+                </div>
+                
+                <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; cursor: pointer;">
+                    <input type="checkbox" id="monthlyDiscountCheck" onchange="toggleMonthlyDiscount()" style="width: 18px; height: 18px;">
+                    <span style="font-size: 14px; font-weight: 600; color: #555;">Aylık hizmetlere indirim uygula</span>
+                </label>
+                
+                <div id="monthlyDiscountSection" style="display: none;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label style="font-size: 12px; color: #666; margin-bottom: 5px; display: block;">İndirim Tutarı (veya %15 formatında)</label>
+                            <input type="text" id="monthlyDiscountInput" placeholder="Örn: 2000 veya %10" onchange="updateMonthlyDiscount()" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px;">
+                        </div>
+                        <div>
+                            <label style="font-size: 12px; color: #666; margin-bottom: 5px; display: block;">İndirim Süresi</label>
+                            <select id="monthlyDiscountDuration" onchange="updateMonthlyDiscount()" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px;">
+                                <option value="1">1 Ay</option>
+                                <option value="2">2 Ay</option>
+                                <option value="3" selected>3 Ay</option>
+                                <option value="4">4 Ay</option>
+                                <option value="5">5 Ay</option>
+                                <option value="6">6 Ay</option>
+                                <option value="7">7 Ay</option>
+                                <option value="8">8 Ay</option>
+                                <option value="9">9 Ay</option>
+                                <option value="10">10 Ay</option>
+                                <option value="11">11 Ay</option>
+                                <option value="12">12 Ay</option>
+                                <option value="permanent">Sürekli</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #fff3e0; border: 2px solid #ffa726; border-radius: 8px; padding: 12px; margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 13px; color: #e65100;">İndirim Tutarı:</span>
+                            <span id="monthlyDiscountAmount" style="font-size: 14px; font-weight: 600; color: #f44336;">-0 TL</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 13px; color: #e65100;" id="monthlyDiscountPeriodLabel">İlk 3 Ay:</span>
+                            <span id="monthlyDiscountedPrice" style="font-size: 14px; font-weight: 600; color: #4a90e2;">0 TL +KDV</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;" id="monthlyAfterDiscountRow">
+                            <span style="font-size: 13px; color: #666;">Sonraki Aylar:</span>
+                            <span id="monthlyNormalPrice" style="font-size: 14px; font-weight: 600; color: #666;">0 TL +KDV</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Özet -->
             <div class="summary">
                 <div class="summary-title">📋 Teklif Özeti</div>
@@ -985,6 +1159,304 @@
 
         // Sayfa yüklendiğinde fiyatları çek
         window.addEventListener('DOMContentLoaded', loadPricingFromGitHub);
+
+        // ============================================================================
+        // MANUEL HİZMET EKLEME
+        // ============================================================================
+
+        let manualServiceCounter = 0;
+
+        function addManualService() {
+            manualServiceCounter++;
+            const container = document.getElementById('manualServicesContainer');
+            
+            const serviceCard = document.createElement('div');
+            serviceCard.className = 'manual-service-card';
+            serviceCard.id = `manual-service-${manualServiceCounter}`;
+            
+            serviceCard.innerHTML = `
+                <div class="manual-service-header">
+                    <div class="manual-service-title">🔧 Hizmet #${manualServiceCounter}</div>
+                    <button class="remove-service-btn" onclick="removeManualService(${manualServiceCounter})">🗑️ Sil</button>
+                </div>
+                <div class="manual-service-grid">
+                    <div class="form-group">
+                        <label>Hizmet Adı *</label>
+                        <input type="text" id="manual-name-${manualServiceCounter}" placeholder="Örn: Logo Tasarımı" onchange="updateManualServicePrice(${manualServiceCounter})">
+                    </div>
+                    <div class="form-group">
+                        <label>Birim Fiyat (TL) *</label>
+                        <input type="text" id="manual-price-${manualServiceCounter}" placeholder="Örn: 5000 veya 2500H (hediye)" min="0" onchange="updateManualServicePrice(${manualServiceCounter})">
+                    </div>
+                    <div class="form-group">
+                        <label>Adet *</label>
+                        <input type="number" id="manual-qty-${manualServiceCounter}" placeholder="1" min="1" value="1" onchange="updateManualServicePrice(${manualServiceCounter})">
+                    </div>
+                </div>
+                <div class="manual-service-price" id="manual-total-${manualServiceCounter}">0 TL +KDV</div>
+            `;
+            
+            container.appendChild(serviceCard);
+            updatePrices();
+        }
+
+        function removeManualService(id) {
+            const serviceCard = document.getElementById(`manual-service-${id}`);
+            if (serviceCard) {
+                serviceCard.remove();
+                updatePrices();
+            }
+        }
+
+        function updateManualServicePrice(id) {
+            const priceInput = document.getElementById(`manual-price-${id}`).value.trim().toUpperCase();
+            const qty = parseInt(document.getElementById(`manual-qty-${id}`).value) || 0;
+            
+            let price = 0;
+            let originalPrice = 0;
+            let isGift = false;
+            let displayText = '';
+            
+            if (priceInput.endsWith('H')) {
+                // Hediye format: "2500H" veya sadece "H"
+                isGift = true;
+                const priceStr = priceInput.replace('H', '').trim();
+                originalPrice = parseFloat(priceStr) || 0;
+                price = 0; // Hediye olduğu için fiyat 0
+                
+                if (originalPrice > 0) {
+                    displayText = `🎁 HEDİYE (${formatPriceForPDF(originalPrice * qty)} TL)`;
+                } else {
+                    displayText = '🎁 HEDİYE';
+                }
+            } else {
+                // Normal fiyat
+                price = parseFloat(priceInput) || 0;
+                originalPrice = price;
+                const total = price * qty;
+                displayText = formatPrice(total);
+            }
+            
+            document.getElementById(`manual-total-${id}`).textContent = displayText;
+            
+            // Hediye attribute'larını kaydet
+            document.getElementById(`manual-price-${id}`).setAttribute('data-is-gift', isGift);
+            document.getElementById(`manual-price-${id}`).setAttribute('data-original-price', originalPrice);
+            
+            updateManualTotals();
+            updatePrices();
+        }
+
+        function updateManualTotals() {
+            const services = getAllManualServices();
+            const subtotal = services.reduce((sum, service) => sum + service.total, 0);
+            
+            const totalDiv = document.getElementById('manualServicesTotal');
+            
+            if (services.length > 0) {
+                totalDiv.style.display = 'block';
+                document.getElementById('manualSubtotal').textContent = formatPrice(subtotal);
+                
+                // İndirim hesapla
+                updateManualDiscount();
+            } else {
+                totalDiv.style.display = 'none';
+            }
+        }
+
+        function toggleManualDiscount() {
+            const checked = document.getElementById('manualDiscountCheck').checked;
+            const section = document.getElementById('manualDiscountSection');
+            section.style.display = checked ? 'block' : 'none';
+            
+            if (!checked) {
+                document.getElementById('manualDiscountInput').value = '';
+            }
+            updateManualDiscount();
+        }
+
+        function updateManualDiscount() {
+            const services = getAllManualServices();
+            const subtotal = services.reduce((sum, service) => sum + service.total, 0);
+            
+            const discountEnabled = document.getElementById('manualDiscountCheck').checked;
+            let discountAmount = 0;
+            
+            if (discountEnabled) {
+                const input = document.getElementById('manualDiscountInput').value.trim();
+                
+                if (input.includes('%')) {
+                    // Yüzde hesaplama
+                    const percent = parseFloat(input.replace('%', ''));
+                    if (!isNaN(percent)) {
+                        discountAmount = (subtotal * percent) / 100;
+                    }
+                } else {
+                    // Direkt tutar
+                    discountAmount = parseFloat(input) || 0;
+                }
+            }
+            
+            // Negatif veya subtotal'dan büyük olamaz
+            discountAmount = Math.max(0, Math.min(discountAmount, subtotal));
+            
+            const netTotal = subtotal - discountAmount;
+            
+            document.getElementById('manualDiscountAmount').textContent = '-' + formatPriceForPDF(discountAmount) + ' TL';
+            document.getElementById('manualNetTotal').textContent = formatPrice(netTotal);
+            
+            updatePrices();
+        }
+
+        function getManualServicesTotal() {
+            const services = getAllManualServices();
+            const subtotal = services.reduce((sum, service) => sum + service.total, 0);
+            
+            const discountEnabled = document.getElementById('manualDiscountCheck').checked;
+            let discountAmount = 0;
+            
+            if (discountEnabled) {
+                const input = document.getElementById('manualDiscountInput').value.trim();
+                
+                if (input.includes('%')) {
+                    const percent = parseFloat(input.replace('%', ''));
+                    if (!isNaN(percent)) {
+                        discountAmount = (subtotal * percent) / 100;
+                    }
+                } else {
+                    discountAmount = parseFloat(input) || 0;
+                }
+            }
+            
+            discountAmount = Math.max(0, Math.min(discountAmount, subtotal));
+            return subtotal - discountAmount;
+        }
+
+        // ============================================================================
+        // AYLIK HİZMETLER İNDİRİMİ
+        // ============================================================================
+
+        function toggleMonthlyDiscount() {
+            const checked = document.getElementById('monthlyDiscountCheck').checked;
+            const section = document.getElementById('monthlyDiscountSection');
+            section.style.display = checked ? 'block' : 'none';
+            
+            if (!checked) {
+                document.getElementById('monthlyDiscountInput').value = '';
+            }
+            updateMonthlyDiscount();
+        }
+
+        function updateMonthlyDiscount() {
+            updatePrices();
+        }
+
+        function getMonthlyDiscount(monthlyTotal) {
+            const discountEnabled = document.getElementById('monthlyDiscountCheck').checked;
+            
+            if (!discountEnabled) {
+                return {
+                    enabled: false,
+                    amount: 0,
+                    duration: 'permanent',
+                    discountedPrice: monthlyTotal,
+                    normalPrice: monthlyTotal
+                };
+            }
+            
+            const input = document.getElementById('monthlyDiscountInput').value.trim();
+            const duration = document.getElementById('monthlyDiscountDuration').value;
+            let discountAmount = 0;
+            
+            if (input.includes('%')) {
+                const percent = parseFloat(input.replace('%', ''));
+                if (!isNaN(percent)) {
+                    discountAmount = (monthlyTotal * percent) / 100;
+                }
+            } else {
+                discountAmount = parseFloat(input) || 0;
+            }
+            
+            discountAmount = Math.max(0, Math.min(discountAmount, monthlyTotal));
+            const discountedPrice = monthlyTotal - discountAmount;
+            
+            // UI güncelle
+            document.getElementById('monthlyDiscountAmount').textContent = '-' + formatPriceForPDF(discountAmount) + ' TL';
+            document.getElementById('monthlyDiscountedPrice').textContent = formatPrice(discountedPrice);
+            document.getElementById('monthlyNormalPrice').textContent = formatPrice(monthlyTotal);
+            
+            // Label güncelle
+            const label = document.getElementById('monthlyDiscountPeriodLabel');
+            const afterRow = document.getElementById('monthlyAfterDiscountRow');
+            
+            if (duration === 'permanent') {
+                label.textContent = 'İndirimli Fiyat:';
+                afterRow.style.display = 'none';
+            } else {
+                const months = parseInt(duration);
+                label.textContent = `İlk ${months} Ay:`;
+                afterRow.style.display = 'flex';
+            }
+            
+            return {
+                enabled: true,
+                amount: discountAmount,
+                duration: duration,
+                discountedPrice: discountedPrice,
+                normalPrice: monthlyTotal,
+                input: input
+            };
+        }
+
+        function getAllManualServices() {
+            const services = [];
+            const container = document.getElementById('manualServicesContainer');
+            const cards = container.querySelectorAll('.manual-service-card');
+            
+            cards.forEach(card => {
+                const id = card.id.replace('manual-service-', '');
+                const name = document.getElementById(`manual-name-${id}`).value.trim();
+                const priceInput = document.getElementById(`manual-price-${id}`);
+                const priceValue = priceInput.value.trim().toUpperCase();
+                const qty = parseInt(document.getElementById(`manual-qty-${id}`).value) || 0;
+                const isGift = priceInput.getAttribute('data-is-gift') === 'true';
+                const originalPrice = parseFloat(priceInput.getAttribute('data-original-price')) || 0;
+                
+                if (name && qty > 0) {
+                    if (isGift || priceValue.endsWith('H')) {
+                        // Hediye hizmet
+                        services.push({
+                            name: name,
+                            unitPrice: 0,
+                            originalPrice: originalPrice,
+                            quantity: qty,
+                            total: 0,
+                            isGift: true
+                        });
+                    } else {
+                        // Normal hizmet
+                        const price = parseFloat(priceValue) || 0;
+                        if (price > 0) {
+                            services.push({
+                                name: name,
+                                unitPrice: price,
+                                originalPrice: price,
+                                quantity: qty,
+                                total: price * qty,
+                                isGift: false
+                            });
+                        }
+                    }
+                }
+            });
+            
+            return services;
+        }
+
+        function getTotalManualServicesPrice() {
+            const services = getAllManualServices();
+            return services.reduce((sum, service) => sum + service.total, 0);
+        }
 
         // ============================================================================
         // PDF AÇIKLAMALARI - HİZMET DETAYLARI
@@ -1356,13 +1828,84 @@
                 `;
             }
 
-            document.getElementById('summaryTotal').textContent = formatPrice(total);
+            // Manuel hizmetleri ekle (indirimli)
+            const manualServices = getAllManualServices();
+            const manualSubtotal = manualServices.reduce((sum, service) => sum + service.total, 0);
+            const manualNetTotal = getManualServicesTotal(); // İndirimli toplam
+            
+            manualServices.forEach(service => {
+                if (service.isGift) {
+                    // Hediye hizmet
+                    if (service.originalPrice > 0) {
+                        // Orijinal fiyat belirtilmiş: "2500H"
+                        summaryItems.innerHTML += `
+                            <div class="summary-item">
+                                <span class="summary-label">🔧 ${service.name} (${service.quantity} adet x ${formatPriceForPDF(service.originalPrice)} TL)</span>
+                                <span class="summary-value" style="color: #4caf50; font-weight: 600;">🎁 HEDİYE</span>
+                            </div>
+                        `;
+                    } else {
+                        // Sadece "H" yazılmış
+                        summaryItems.innerHTML += `
+                            <div class="summary-item">
+                                <span class="summary-label">🔧 ${service.name} (${service.quantity} adet)</span>
+                                <span class="summary-value" style="color: #4caf50; font-weight: 600;">🎁 HEDİYE</span>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // Normal hizmet
+                    summaryItems.innerHTML += `
+                        <div class="summary-item">
+                            <span class="summary-label">🔧 ${service.name} (${service.quantity} adet x ${formatPriceForPDF(service.unitPrice)} TL)</span>
+                            <span class="summary-value">${formatPrice(service.total)}</span>
+                        </div>
+                    `;
+                }
+            });
+            
+            // Manuel hizmet indirimi göster
+            const manualDiscountEnabled = document.getElementById('manualDiscountCheck').checked;
+            const manualDiscountAmount = manualSubtotal - manualNetTotal;
+            
+            if (manualDiscountEnabled && manualDiscountAmount > 0) {
+                summaryItems.innerHTML += `
+                    <div class="summary-item" style="color: #f44336;">
+                        <span class="summary-label">🎁 Manuel Hizmet İndirimi</span>
+                        <span class="summary-value">-${formatPriceForPDF(manualDiscountAmount)} TL</span>
+                    </div>
+                `;
+            }
 
-            // Minimum tutar kontrolü (15.000 TL)
+            // Aylık hizmetler indirimi
+            const monthlyDiscount = getMonthlyDiscount(total);
+            let displayTotal = total;
+            
+            if (monthlyDiscount.enabled && monthlyDiscount.amount > 0) {
+                displayTotal = monthlyDiscount.discountedPrice;
+                
+                summaryItems.innerHTML += `
+                    <div class="summary-item" style="color: #f44336;">
+                        <span class="summary-label">🎁 Aylık Hizmetler İndirimi</span>
+                        <span class="summary-value">-${formatPriceForPDF(monthlyDiscount.amount)} TL</span>
+                    </div>
+                `;
+            }
+
+            // Toplam (manuel hizmetler + aylık hizmetler)
+            const finalTotal = displayTotal + manualNetTotal;
+            document.getElementById('summaryTotal').textContent = formatPrice(finalTotal);
+
+            // Minimum tutar kontrolü (15.000 TL) - Sadece paket hizmetler için
             const MINIMUM_AMOUNT = 15000;
             const warningElement = document.getElementById('minimumWarning');
             
-            if (total > 0 && total < MINIMUM_AMOUNT) {
+            // Eğer sadece manuel hizmet varsa veya toplam 15K'dan fazlaysa uyarı gösterme
+            if (manualNetTotal > 0 && total === 0) {
+                // Sadece manuel hizmet var, uyarı gösterme
+                warningElement.classList.remove('show');
+            } else if (total > 0 && total < MINIMUM_AMOUNT) {
+                // Paket hizmetler 15K'dan az
                 warningElement.classList.add('show');
             } else {
                 warningElement.classList.remove('show');
@@ -1506,9 +2049,12 @@
             
             const total = postPrice + carouselPrice + storyPrice + reelsPrice + metaPrice + googleAdsPrice + platformPrice;
 
-            // Minimum tutar kontrolü
+            // Manuel hizmetleri ve indirimleri hesapla
+            const manualNetTotal = getManualServicesTotal();
+
+            // Minimum tutar kontrolü (sadece paket hizmetler için, manuel hizmetler hariç)
             const MINIMUM_AMOUNT = 15000;
-            if (total < MINIMUM_AMOUNT) {
+            if (total > 0 && total < MINIMUM_AMOUNT && manualNetTotal === 0) {
                 alert('⚠️ Minimum Hizmet Bedeli Uyarısı\n\nMinimum hizmet bedelimiz 15.000 TL +KDV\'dir.\n\nMevcut seçimleriniz: ' + formatPrice(total) + '\n\nLütfen hizmet seçimlerinizi artırarak minimum tutarı karşılayınız.');
                 return;
             }
@@ -1728,9 +2274,104 @@
                         </div>
                     `;
                 }
+
+                // Manuel hizmetleri ekle
+                const manualServices = getAllManualServices();
+                manualServices.forEach(service => {
+                    if (service.isGift) {
+                        if (service.originalPrice > 0) {
+                            servicesHtml += `
+                                <div class="service-item">
+                                    <span class="service-name">🔧 ${service.name} (${service.quantity} adet x ${formatPriceForPDF(service.originalPrice)} TL)</span>
+                                    <span class="service-price" style="color: #4caf50; font-weight: 600;">🎁 HEDİYE</span>
+                                </div>
+                            `;
+                        } else {
+                            servicesHtml += `
+                                <div class="service-item">
+                                    <span class="service-name">🔧 ${service.name} (${service.quantity} adet)</span>
+                                    <span class="service-price" style="color: #4caf50; font-weight: 600;">🎁 HEDİYE</span>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        servicesHtml += `
+                            <div class="service-item">
+                                <span class="service-name">🔧 ${service.name} (${service.quantity} adet x ${formatPriceForPDF(service.unitPrice)} TL)</span>
+                                <span class="service-price">${formatPrice(service.total)}</span>
+                            </div>
+                        `;
+                    }
+                });
+
+                // Manuel hizmet indirimi
+                const manualSubtotal = manualServices.reduce((sum, s) => sum + s.total, 0);
+                const manualNetTotal = getManualServicesTotal();
+                const manualDiscountAmount = manualSubtotal - manualNetTotal;
+                
+                if (document.getElementById('manualDiscountCheck').checked && manualDiscountAmount > 0) {
+                    servicesHtml += `
+                        <div class="service-item" style="color: #f44336;">
+                            <span class="service-name">🎁 Manuel Hizmet İndirimi</span>
+                            <span class="service-price">-${formatPriceForPDF(manualDiscountAmount)} TL</span>
+                        </div>
+                    `;
+                }
+
+                // Aylık hizmetler indirimi
+                const monthlyDiscount = getMonthlyDiscount(total);
+                let finalTotal = total + manualNetTotal;
+                
+                if (monthlyDiscount.enabled && monthlyDiscount.amount > 0) {
+                    servicesHtml += `
+                        <div class="service-item" style="color: #f44336;">
+                            <span class="service-name">🎁 Aylık Hizmetler İndirimi (${monthlyDiscount.input})</span>
+                            <span class="service-price">-${formatPriceForPDF(monthlyDiscount.amount)} TL</span>
+                        </div>
+                    `;
+                    finalTotal = monthlyDiscount.discountedPrice + manualNetTotal;
+                }
                 
                 tempDiv.querySelector('#pdf-services-list').innerHTML = servicesHtml;
-                tempDiv.querySelector('#pdf-total').textContent = formatPrice(total);
+                tempDiv.querySelector('#pdf-total').textContent = formatPrice(finalTotal);
+
+                // Aylık indirim bilgisi varsa ekle
+                if (monthlyDiscount.enabled && monthlyDiscount.amount > 0) {
+                    const discountInfoDiv = tempDiv.querySelector('#pdf-discount-info');
+                    if (discountInfoDiv) {
+                        if (monthlyDiscount.duration === 'permanent') {
+                            discountInfoDiv.innerHTML = `
+                                <div style="background: #fff3e0; border: 2px solid #ffa726; border-radius: 8px; padding: 12px; margin-top: 15px;">
+                                    <strong style="color: #e65100;">📢 İndirim Bilgisi:</strong><br>
+                                    <span style="color: #ef6c00;">Aylık hizmet bedeli ${formatPrice(finalTotal - manualNetTotal)} olarak sürekli uygulanacaktır.</span>
+                                </div>
+                            `;
+                        } else {
+                            const months = parseInt(monthlyDiscount.duration);
+                            discountInfoDiv.innerHTML = `
+                                <div style="background: #fff3e0; border: 2px solid #ffa726; border-radius: 8px; padding: 12px; margin-top: 15px;">
+                                    <strong style="color: #e65100;">📢 İndirim Bilgisi:</strong><br>
+                                    <span style="color: #ef6c00;">İlk ${months} ay aylık hizmet bedeli: ${formatPrice(monthlyDiscount.discountedPrice)}</span><br>
+                                    <span style="color: #666;">Sonraki aylarda aylık hizmet bedeli: ${formatPrice(monthlyDiscount.normalPrice)}</span>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+
+                // Ek notları ekle
+                const extraNotes = document.getElementById('extraNotes').value.trim();
+                if (extraNotes) {
+                    const notesDiv = tempDiv.querySelector('#pdf-extra-notes');
+                    if (notesDiv) {
+                        notesDiv.innerHTML = `
+                            <div style="background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 8px; padding: 15px; margin-top: 20px;">
+                                <h3 style="color: #1565c0; margin-bottom: 10px; font-size: 16px;">📝 Ek Notlar</h3>
+                                <div style="color: #333; white-space: pre-line; line-height: 1.6;">${extraNotes}</div>
+                            </div>
+                        `;
+                    }
+                }
 
                 // Açıklamaları ekle
                 let descriptionsHtml = '';
