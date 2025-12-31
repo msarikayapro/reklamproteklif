@@ -1903,14 +1903,14 @@
                         summaryItems.innerHTML += `
                             <div class="summary-item">
                                 <span class="summary-label">🔧 ${service.name} (${service.quantity} adet x ${formatPriceForPDF(service.originalPrice)} TL) 📅</span>
-                                <span class="summary-value" style="color: #4caf50; font-weight: 600;">🎁 HEDİYE</span>
+                                <span class="summary-value" style="color: #2196f3; font-weight: 700;">🎁 HEDİYE</span>
                             </div>
                         `;
                     } else {
                         summaryItems.innerHTML += `
                             <div class="summary-item">
                                 <span class="summary-label">🔧 ${service.name} (${service.quantity} adet) 📅</span>
-                                <span class="summary-value" style="color: #4caf50; font-weight: 600;">🎁 HEDİYE</span>
+                                <span class="summary-value" style="color: #2196f3; font-weight: 700;">🎁 HEDİYE</span>
                             </div>
                         `;
                     }
@@ -1936,9 +1936,9 @@
                 displayMonthlyTotal = monthlyDiscount.discountedPrice;
                 
                 summaryItems.innerHTML += `
-                    <div class="summary-item" style="color: #f44336;">
-                        <span class="summary-label">🎁 Aylık Hizmetler İndirimi</span>
-                        <span class="summary-value">-${formatPriceForPDF(monthlyDiscount.amount)} TL</span>
+                    <div class="summary-item">
+                        <span class="summary-label" style="font-weight: 700; color: #f44336;">🎁 Aylık Hizmetler İndirimi</span>
+                        <span class="summary-value" style="font-weight: 700; color: #f44336;">-${formatPriceForPDF(monthlyDiscount.amount)} TL</span>
                     </div>
                 `;
             }
@@ -1979,7 +1979,7 @@
             
             // Tekil manuel hizmet indirimi göster (MAVİ KUTUCUKTA)
             const manualDiscountEnabled = document.getElementById('manualDiscountCheck').checked;
-            const manualDiscountAmount = manualSubtotal - manualNetTotal;
+            const manualDiscountAmount = oneTimeManualSubtotal - oneTimeManualNetTotal;
             
             if (manualDiscountEnabled && manualDiscountAmount > 0 && oneTimeManualServices.length > 0) {
                 summaryOneTimeItems.innerHTML += `
