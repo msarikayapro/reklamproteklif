@@ -37,7 +37,7 @@
 
   <!-- Services Summary -->
   <div class="services-summary">
-    <h2 class="summary-title">Hizmet Detayları</h2>
+    <h2 class="summary-title">Aylık Hizmetler</h2>
     
     <div class="platform-info">
       <span class="platform-label">📱 Platformlar:</span>
@@ -45,20 +45,34 @@
     </div>
 
     <div id="pdf-services-list">
-      <!-- Services will be inserted here dynamically -->
+      <!-- Monthly services will be inserted here dynamically -->
     </div>
 
     <div class="total-section">
       <span class="total-label">TOPLAM AYLIK ÜCRET:</span>
-      <span class="total-price" id="pdf-total"></span>
+      <span class="total-price" id="pdf-monthly-total"></span>
     </div>
 
     <!-- Discount Info (if applicable) -->
     <div id="pdf-discount-info"></div>
-
-    <!-- Extra Notes (if applicable) -->
-    <div id="pdf-extra-notes"></div>
   </div>
+
+  <!-- One-Time Services Section -->
+  <div class="services-summary" id="pdf-onetime-section" style="display: none; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 2px solid #2196f3; margin-top: 20px;">
+    <h2 class="summary-title" style="color: #1565c0;">💼 Tekil Hizmetler (Tek Seferlik)</h2>
+    
+    <div id="pdf-onetime-list">
+      <!-- One-time services will be inserted here dynamically -->
+    </div>
+
+    <div class="total-section" style="background: #2196f3; color: white;">
+      <span class="total-label">TEKİL HİZMETLER TOPLAMI:</span>
+      <span class="total-price" id="pdf-onetime-total"></span>
+    </div>
+  </div>
+
+  <!-- Extra Notes -->
+  <div id="pdf-extra-notes"></div>
 
   <!-- Notes -->
   <div class="notes-section">
