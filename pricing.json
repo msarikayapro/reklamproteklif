@@ -1,15 +1,15 @@
 {
   "post": {
-    "tier1": 2500,
+    "tier1": 1600,
     "tier2": 1250,
     "tier3": 1000,
     "tier4": 900
   },
   "carousel": {
     "tier1": 2500,
-    "tier2": 1250,
-    "tier3": 1000,
-    "tier4": 900
+    "tier2": 2250,
+    "tier3": 2000,
+    "tier4": 1750
   },
   "story": {
     "tier1": 1600,
